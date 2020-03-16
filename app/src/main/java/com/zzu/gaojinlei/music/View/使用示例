@@ -1,0 +1,115 @@
+package com.zzu.gaojinlei.lrc;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+
+import java.io.File;
+
+public class MainActivity extends AppCompatActivity {
+
+    private LrcView mLrc;
+    private MediaPlayer mPlayer;
+    private String mDir = Environment.getExternalStorageDirectory() + File.separator + "Download" + File.separator;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // 歌曲路径
+        String music = "raw/a11.mp3";
+        // 歌词路径
+        String lrc = "raw/a111.lrc";
+        mLrc = (LrcView) findViewById(R.id.lrc);
+        // 设置背景图片
+        // 可以选择不设置
+        // 最好是在真个屏幕设置该图片
+        // 那样更好看
+//        mLrc.setBackground(BitmapFactory.decodeFile(mDir + "1.png"));
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(this,Uri.parse("android.resource://" + this.getPackageName() + "/raw/" + R.raw.a11));
+            mPlayer.setOnPreparedListener(new PreparedListener());
+            mPlayer.prepareAsync();
+
+            // 设置lrc的路径
+//            mLrc.setLrcPath();
+            mLrc.setLrcString("[00:00.00]毛不易 - 盛夏(Live)\n" +
+                    "[00:01.85]词：毛不易\n" +
+                    "[00:02.91]曲：毛不易\n" +
+                    "[00:03.90]编曲：迦宁乐社\n" +
+                    "[00:05.29]音乐总监：谭伊哲\n" +
+                    "[00:06.78]手碟：刘恒\n" +
+                    "[00:07.86]乐队：TYZ乐队\n" +
+                    "[00:09.93]乐队队长兼吉他手：黄竣琮\n" +
+                    "[00:11.14]键盘1：韩韵\n" +
+                    "[00:12.29]键盘2：杨猛\n" +
+                    "[00:13.44]鼓手：胡宇飞\n" +
+                    "[00:14.42]吉他2：Andrew Moore(加拿大)\n" +
+                    "[00:17.64]贝斯： Ryan Bradetich(美国)\n" +
+                    "[00:18.42]和声：梁古驰/王思思/刘芮嘉\n" +
+                    "[00:20.94]打击乐：Gman\n" +
+                    "[00:21.97]电脑工程：郭丁尘\n" +
+                    "[00:23.55]音乐统筹：吕易秋 by T.Y.Z\n" +
+                    "[00:31.49]那是日落时候轻轻发出的叹息吧\n" +
+                    "[00:39.19]昨天已经走远了 明天该去哪啊\n" +
+                    "[00:46.91]相框里的那些闪闪发光的我们啊\n" +
+                    "[00:54.52]在夏天发生的事 你忘了吗\n" +
+                    "[01:03.35]铁道旁的老树下 几只乌鸦\n" +
+                    "[01:11.82]叫到嗓音沙哑 却再没人回答\n" +
+                    "[01:18.75]火车呼啸着驶过 驶过寂寞或繁华\n" +
+                    "[01:25.48]曾经年轻的人 会想我吗\n" +
+                    "[01:34.64]就回来吧 回来吧 有人在等你啊\n" +
+                    "[01:43.30]有人在等你说完那句说一半的话\n" +
+                    "[01:50.48]就别走了 留下吧 外面它太复杂\n" +
+                    "[01:58.76]多少次让你热泪盈眶却不敢流下\n" +
+                    "[02:38.36]铁道旁的老树下 几只乌鸦\n" +
+                    "[02:45.90]叫到嗓音沙哑 却再没人回答\n" +
+                    "[02:53.62]火车呼啸着驶过 驶过寂寞或繁华\n" +
+                    "[03:00.38]曾经年轻的人啊 也会想我吗\n" +
+                    "[03:09.33]就回来吧 回来吧 有人在等你啊\n" +
+                    "[03:18.99]有人在等你说完那句说一半的话\n" +
+                    "[03:24.94]就别走了 留下吧 外面它太复杂\n" +
+                    "[03:33.58]多少次让你热泪盈眶却不敢流下\n" +
+                    "[03:55.88]可时光啊 不听话 总催着人长大\n" +
+                    "[04:04.57]这一站到下一站旅途总是停不下\n" +
+                    "[04:11.29]就慢慢的 忘了吧 因为回不去啊\n" +
+                    "[04:20.00]那闭上眼睛就拥有了一切的盛夏");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class PreparedListener implements MediaPlayer.OnPreparedListener {
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+
+            mPlayer.start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // 当歌曲还在播放时
+                    // 就一直调用changeCurrent方法
+                    // 虽然一直调用， 但界面不会一直刷新
+                    // 只有当唱到下一句时才刷新
+                    while(mPlayer.isPlaying()) {
+                        // 调用changeCurrent方法， 参数是当前播放的位置
+                        // LrcView会自动判断需不需要下一行
+                        mLrc.changeCurrent(mPlayer.getCurrentPosition());
+
+                        // 当然这里还是要睡一会的啦
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }
+    }
+}
