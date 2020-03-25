@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. 高金磊编写
+ */
+
 package com.zzu.gaojinlei.music.View;
 
 import android.annotation.SuppressLint;
@@ -5,6 +9,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -17,33 +22,35 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * 显示lrc歌词控件
- * @author 亓斌 (qibin@gmail.com)
- */
 @SuppressLint("DrawAllocation")
 public class LrcView extends View {
 	private List<String> mLrcs = new ArrayList<String>(); // 存放歌词
 	private List<Long> mTimes = new ArrayList<Long>(); // 存放时间
 
-	private long mNextTime = 0l; // 保存下一句开始的时间
-
+	public int colors[]=new int[]{Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,0xFF03A9F4,Color.LTGRAY};
+	public boolean randomColor=false;
+	private long mNextTime =0L; // 保存下一句开始的时间
+	private int refreshTime=200;//外部的刷新的时间间隔单位ms
 	private int mViewWidth; // view的宽度
 	private int mLrcHeight; // lrc界面的高度
-	private int mRows;      // 多少行
+	private int mRows=5;      // 多少行
+
+
 	private int mCurrentLine = 1; // 当前行
 
-	private float mTextSize; // 字体
-	private float mDividerHeight; // 行间距
+	private float mTextSize=50.0f; // 字体
+	private float mDividerHeight=15.0f; // 行间距
 
 	private Paint mNormalPaint; // 常规的字体
 	private Paint mCurrentPaint; // 当前歌词的大小
-
+	int currentTextColor=0xffffffff;
+	int normalTextColor=0xffffffff;
 	private Bitmap mBackground = null;
-
+	private AttributeSet attributeSet;
 	public LrcView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initViews(attrs);
@@ -56,19 +63,20 @@ public class LrcView extends View {
 
 	// 初始化操作
 	private void initViews(AttributeSet attrs) {
+		attributeSet=attrs;
 		// <begin>
 		// 解析自定义属性
-		TypedArray ta = getContext().obtainStyledAttributes(attrs,
-				R.styleable.Lrc);
-		mTextSize = ta.getDimension(R.styleable.Lrc_textSize, 50.0f);
-		mRows = ta.getInteger(R.styleable.Lrc_rows, 5);
-		mDividerHeight = ta.getDimension(R.styleable.Lrc_dividerHeight, 0.0f);
+		TypedArray ta = getContext().obtainStyledAttributes(attrs,R.styleable.Lrc);
+		mTextSize = ta.getDimension(R.styleable.Lrc_textSize, mTextSize);
+		mRows = ta.getInteger(R.styleable.Lrc_rows, mRows);
+		mDividerHeight = ta.getDimension(R.styleable.Lrc_dividerHeight, mDividerHeight);
 
-		int normalTextColor = ta.getColor(R.styleable.Lrc_normalTextColor,
-				0xffffffff);
-		int currentTextColor = ta.getColor(R.styleable.Lrc_currentTextColor,
-				0xffffffff);
-		
+		normalTextColor = ta.getColor(R.styleable.Lrc_normalTextColor,
+				normalTextColor);
+
+		currentTextColor = ta.getColor(R.styleable.Lrc_currentTextColor,
+				currentTextColor);
+
 		ta.recycle();
 		// </end>
 
@@ -79,9 +87,9 @@ public class LrcView extends View {
 		mCurrentPaint = new Paint();
 
 		// 初始化paint
-		mNormalPaint.setTextSize(mTextSize);
+		mNormalPaint.setTextSize(mTextSize-9);
 		mNormalPaint.setColor(normalTextColor);
-		mCurrentPaint.setTextSize(mTextSize);
+		mCurrentPaint.setTextSize(mTextSize+10);
 		mCurrentPaint.setColor(currentTextColor);
 	}
 
@@ -106,7 +114,10 @@ public class LrcView extends View {
 		if (mLrcs.isEmpty() || mTimes.isEmpty()) {
 			return;
 		}
-
+		if (randomColor){
+			currentTextColor=colors[(int)( colors.length* Math.random())];
+			mCurrentPaint.setColor(currentTextColor);
+		}
 		canvas.save();
 		canvas.clipRect(0, 0, mViewWidth, mLrcHeight);
 
@@ -116,7 +127,7 @@ public class LrcView extends View {
 		}
 
 		// 将画布上移
-		canvas.translate(0, -((mCurrentLine - 3) * (mTextSize + mDividerHeight)));
+		canvas.translate(0, -((mCurrentLine - (mRows+1)/2) * (mTextSize + mDividerHeight)));
 
 		for (int i = mCurrentLine - 1; i >= 0; i--) {
 			String lrc = mLrcs.get(i);
@@ -171,19 +182,20 @@ public class LrcView extends View {
 
 	// 传入当前播放时间
 	public synchronized void changeCurrent(long time) {
-		// 如果当前时间小于下一句开始的时间
-		// 直接return
+		if (time-mNextTime<-refreshTime*5) {//当前位置在上次刷新之前--进行进度重置
+			mNextTime = time;
+			mCurrentLine=0;
+		}
+		//下一句还没开始
 		if (mNextTime > time) {
 			return;
 		}
-
 		// 每次进来都遍历存放的时间
 		for (int i = 0; i < mTimes.size(); i++) {
 			// 发现这个时间大于传进来的时间
 			// 那么现在就应该显示这个时间前面的对应的那一行
 			// 每次都重新显示，是不是要判断：现在正在显示就不刷新了
 			if (mTimes.get(i) > time && i >= mCurrentLine + 1) {
-				System.out.println("换");
 				mNextTime = mTimes.get(i);
 				mCurrentLine = i <= 1 ? 0 : i - 1;
 				postInvalidate();
@@ -198,6 +210,9 @@ public class LrcView extends View {
 	 */
 	public void setLrcString(String data){
 		mLrcs.clear();
+		mTimes.clear();
+		mNextTime=1;
+		mCurrentLine=1;
 		String[] lin;
 		String[] ds=data.split("\n");
 		for (String d : ds) {
@@ -213,6 +228,9 @@ public class LrcView extends View {
 	// 设置lrc的路径
 	public void setLrcPath(String path) throws Exception {
 		mLrcs.clear();
+		mTimes.clear();
+		mNextTime=1;
+		mCurrentLine=1;
 		File file = new File(path);
 		if (!file.exists()) {
 			throw new Exception("lrc not found...");
@@ -246,5 +264,35 @@ public class LrcView extends View {
 	// 设置背景图片
 	public void setBackground(Bitmap bmp) {
 		mBackground = bmp;
+	}
+
+	public void setRefreshTime(int refreshTime) {
+		this.refreshTime = refreshTime;
+	}
+
+	public int getmLrcHeight() {
+		return mLrcHeight;
+	}
+
+	public void setmLrcHeight(int mLrcHeight) {
+		this.mLrcHeight = mLrcHeight;
+	}
+
+	public int getmRows() {
+		return mRows;
+	}
+
+	public void setmRows(int mRows) {
+		this.mRows = mRows;
+		initViews(attributeSet);
+	}
+
+	public void setmTextSize(float mTextSize) {
+		this.mTextSize = mTextSize;
+		initViews(attributeSet);
+	}
+
+	public void setmDividerHeight(float mDividerHeight) {
+		this.mDividerHeight = mDividerHeight;
 	}
 }
