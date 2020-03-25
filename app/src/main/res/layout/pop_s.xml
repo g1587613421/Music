@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:theme="@style/QMUI.Dialog"
+    android:padding="25dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+        android:id="@+id/showfullsceen"
+        android:onClick="toshowfullsceen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="全屏歌词"
+        android:textSize="15dp"
+        android:layout_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:qmui_isRadiusAdjustBounds="true" />
+
+    <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+        android:layout_marginLeft="10dp"
+        android:textColor="@color/qmui_btn_blue_text"
+        android:alpha="0.8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="彩色歌词"/>
+    <Switch
+
+        android:showText="true"
+        android:layout_weight="1"
+        android:textColor="@color/qmui_btn_blue_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

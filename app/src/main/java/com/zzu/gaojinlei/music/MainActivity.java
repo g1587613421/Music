@@ -10,14 +10,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.qmuiteam.qmui.layout.QMUILinearLayout;
+import com.qmuiteam.qmui.util.QMUIDisplayHelper;
 import com.qmuiteam.qmui.widget.QMUIRadiusImageView;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 import com.qmuiteam.qmui.widget.popup.QMUIFullScreenPopup;
+import com.qmuiteam.qmui.widget.popup.QMUINormalPopup;
+import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopups;
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
@@ -29,6 +35,7 @@ import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
     LrcView lrcView;
+    Handler handler=new Handler();
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE" };
@@ -43,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     boolean onSeekBar=false;
     QMUIFullScreenPopup lrcFullSceenPopup;
     LrcView fullLrcview;
+    //降低全屏歌词的后台资源消耗
+    boolean onshow=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         QMUILinearLayout linearLayout= (QMUILinearLayout) QMUILinearLayout.inflate(this,R.layout.fullsceen_lrc,null);
         lrcFullSceenPopup.addView(linearLayout);
         fullLrcview=linearLayout.findViewById(R.id.lrcView);
-        lrcFullSceenPopup.closeBtn(true);
+        lrcFullSceenPopup.closeBtn(false);
     }
 
     private void initlCoverManage() {
@@ -111,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mediaPlayer.setOnPreparedListener(new PreparedListener());
+        mediaPlayer.setOnCompletionListener(new CompletionListener());
 //初始化歌词控件
         initlrc(getResources().getString(musicsData.peek().lrc).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().lrc));
         coverManage.setImage(musicsData.peek().coverImage);
@@ -173,17 +183,65 @@ public class MainActivity extends AppCompatActivity {
         startOrpause(null);
     }
 
-    public void showFullSceenLrc(View view)
+    public void showFullSceenLrc(final View view)
     {
-        fullLrcview.setmRows(50);
-        fullLrcview.setmTextSize(60);
-        fullLrcview.setmDividerHeight(20f);
-        fullLrcview.setLrcString(getResources().getString(musicsData.peek().lrc));
-        Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.drawable.fullscreenbg);
-//        fullLrcview.setBackground(bitmap);
-        lrcFullSceenPopup.show(view);
+        QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
+                .preferredDirection(QMUIPopup.DIRECTION_TOP)
+                .view(R.layout.pop_s)
+                .edgeProtection(QMUIDisplayHelper.dp2px(this, 20))
+                .offsetX(QMUIDisplayHelper.dp2px(this, 20))
+                .offsetYIfBottom(QMUIDisplayHelper.dp2px(this, 5))
+                .shadow(true)
+                .arrow(true)
+                .animStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
+                .show(view);
+
     }
 
+    public void toshowfullsceen(final View view) {
+        AutoShowMessage.showQMUIMessage(MainActivity.this,AutoShowMessage.LOADING,"注意全屏歌词,可能会造成卡顿",1000);
+        lrcFullSceenPopup.onDismiss(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                onshow=false;
+            }
+        });
+        fullLrcview.setmRows(40);
+        fullLrcview.setmTextSize(60);
+        fullLrcview.setmDividerHeight(20f);
+        onshow=true;
+        fullLrcview.setLrcString(getResources().getString(musicsData.peek().lrc));
+//        Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.drawable.fullscreenbg);
+//        fullLrcview.setBackground(bitmap);
+        //此处等待资源加载完毕,不让将处于卡顿状态
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lrcFullSceenPopup.show(findViewById(R.id.timeSeek));
+                    }
+                });
+
+            }
+        }.start();
+
+    }
+
+    private class CompletionListener implements MediaPlayer.OnCompletionListener{
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            mediaPlayer.release();
+            nextMusic(null);
+        }
+    }
     private class PreparedListener implements MediaPlayer.OnPreparedListener {
         @Override
         public void onPrepared(MediaPlayer mp) {
@@ -220,9 +278,10 @@ class LrcControl extends Thread{
                         e.printStackTrace();
                     }
                 if (!onSeekBar) {
-                    timeSeekBar.setProgress((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration());
+                    timeSeekBar.setProgress((float) ( mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01)));
                 }
-                    if (mediaPlayer.isPlaying()) {
+
+                    if (mediaPlayer.isPlaying()&&onshow) {
                         fullLrcview.changeCurrent(mediaPlayer.getCurrentPosition());
                         fullLrcview.randomColor=true;
                     }
