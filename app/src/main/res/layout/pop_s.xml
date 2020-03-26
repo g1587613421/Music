@@ -28,6 +28,7 @@
         android:text="彩色歌词"/>
     <Switch
         android:onClick="changeColor"
+        android:id="@+id/changeColor"
         android:showText="true"
         android:layout_weight="1"
         android:textColor="@color/qmui_btn_blue_text"

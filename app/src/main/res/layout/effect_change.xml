@@ -42,7 +42,7 @@
         <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
             android:textColor="@color/qmui_btn_blue_text"
             android:text="重置"
-            android:onClick="reset"
+            android:id="@+id/resetEffect"
             android:alpha="0.5"
             android:layout_marginLeft="5dp"
             android:textSize="13dp"

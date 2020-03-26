@@ -31,7 +31,7 @@ public class LrcView extends View {
 	private List<String> mLrcs = new ArrayList<String>(); // 存放歌词
 	private List<Long> mTimes = new ArrayList<Long>(); // 存放时间
 
-	public int colors[]=new int[]{Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,0xFF03A9F4,Color.LTGRAY};
+	public int colors[]=new int[]{Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,0xFF03A9F4,Color.YELLOW};
 	public boolean randomColor=false;
 	private long mNextTime =0L; // 保存下一句开始的时间
 	private int refreshTime=200;//外部的刷新的时间间隔单位ms
@@ -39,7 +39,7 @@ public class LrcView extends View {
 	private int mLrcHeight; // lrc界面的高度
 	private int mRows=5;      // 多少行
 
-
+	private boolean proofread=false;
 	private int mCurrentLine = 1; // 当前行
 
 	private float mTextSize=50.0f; // 字体
@@ -180,12 +180,12 @@ public class LrcView extends View {
 		return result;
 	}
 
+	public void changeProcess(){
+		mNextTime=0;
+		mCurrentLine=1;
+	}
 	// 传入当前播放时间
 	public synchronized void changeCurrent(long time) {
-		if (time-mNextTime<-refreshTime*5) {//当前位置在上次刷新之前--进行进度重置
-			mNextTime = time;
-			mCurrentLine=0;
-		}
 		//下一句还没开始
 		if (mNextTime > time) {
 			return;
@@ -235,7 +235,6 @@ public class LrcView extends View {
 		if (!file.exists()) {
 			throw new Exception("lrc not found...");
 		}
-
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				new FileInputStream(file)));
 

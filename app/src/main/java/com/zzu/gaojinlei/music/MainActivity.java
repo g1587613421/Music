@@ -3,28 +3,41 @@ package com.zzu.gaojinlei.music;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.Toast;
 
+import com.qmuiteam.qmui.alpha.QMUIAlphaTextView;
+import com.qmuiteam.qmui.layout.QMUIButton;
 import com.qmuiteam.qmui.layout.QMUILinearLayout;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
+import com.qmuiteam.qmui.widget.QMUILoadingView;
 import com.qmuiteam.qmui.widget.QMUIRadiusImageView;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
+import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
+import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
+import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 import com.qmuiteam.qmui.widget.popup.QMUIFullScreenPopup;
 import com.qmuiteam.qmui.widget.popup.QMUINormalPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopups;
+import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton;
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
@@ -42,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     MediaPlayer mediaPlayer;
     CoverManage coverManage;//封面管理器
-    LinkedList<MusicData> musicsData=new LinkedList<>();
+   static private LinkedList<MusicData> musicsData=new LinkedList<>();
     boolean ispause=false;
     Thread lrcContal;
     IndicatorSeekBar timeSeekBar;
@@ -59,12 +72,61 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //初始化数据
-        musicsData.add(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg));
-        musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao));
+        musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
+        musicsData.add(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg,"盛夏","毛不易"));
+        musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
         //初始化音乐环境
         initializeTheEnvironment();
         //初始化控件
         initMusicView();
+        //侧边栏
+        initDrawerLayout();
+
+    }
+
+    private void initDrawerLayout() {
+        //启动组件监听服务
+      final Thread listrner=new Thread(){
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                    if (SongListManager.change) {
+                        SongListManager.change = false;
+                        if (mediaPlayer != null) {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    initializeTheEnvironment();
+                                    startOrpause(null);
+                                    if (SongListManager.getInstance()!=null)
+                                        SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
+                                }
+                            });
+
+                        }
+                    }
+                }
+            }
+        };
+        SongListManager.getInstance(this, (QMUIGroupListView) findViewById(R.id.listView));
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);/*重点，获取主界面的布局，因为没有这句话我才报错*/
+        drawerLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
+                if (hasFocus)
+                    listrner.start();
+                else
+                    listrner.interrupt();
+            }
+        });
+
 
     }
 
@@ -89,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
                 onSeekBar=false;
                 if (mediaPlayer.isPlaying()){
                     mediaPlayer.seekTo((int)(middle*mediaPlayer.getDuration()));
+                    lrcView.changeProcess();
+                    fullLrcview.changeProcess();
                 }
                 else {
                     AutoShowMessage.showQMUIMessage(MainActivity.this,AutoShowMessage.FAIL,"请先播放音乐",1000);
@@ -116,16 +180,24 @@ public class MainActivity extends AppCompatActivity {
         //初始化封面管理器
         initlCoverManage();
         try {
-            mediaPlayer.setDataSource(getResources().openRawResourceFd((int) musicsData.peek().song));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mediaPlayer.setDataSource(getResources().openRawResourceFd((int) musicsData.peek().song));
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+           AutoShowMessage.showQMUIMessage(this,"手机版本过低无法播放",AutoShowMessage.FAIL);
         }
 
         mediaPlayer.setOnPreparedListener(new PreparedListener());
         mediaPlayer.setOnCompletionListener(new CompletionListener());
+        ((QMUIAlphaTextView)findViewById(R.id.songname)).setText(musicsData.peek().name);
+        ((QMUIAlphaTextView)findViewById(R.id.player)).setText((musicsData.peek().singer));
 //初始化歌词控件
         initlrc(getResources().getString(musicsData.peek().lrc).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().lrc));
         coverManage.setImage(musicsData.peek().coverImage);
+        //绑定音频到控制器
+        new EffectManage(mediaPlayer).update();
+
+
     }
 
     private LrcView initlrc(String lrcSources){
@@ -153,8 +225,13 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.start();
                 ispause=false;
             }else {
-                mediaPlayer.prepareAsync();
 
+                try {
+                    mediaPlayer.prepareAsync();
+                } catch (IllegalStateException e) {
+                    initializeTheEnvironment();
+                    startOrpause(null);
+                }
             }
             coverManage.start();
             Toast.makeText(this, "开始播放", Toast.LENGTH_SHORT).show();
@@ -167,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
             ((QMUIRadiusImageView) findViewById(R.id.control)).setImageResource(R.drawable.bofang);
             ((QMUIRadiusImageView) findViewById(R.id.control)).setColorFilter(Color.GREEN);
         }
+
     }
 
     public void nextMusic(View view) {
@@ -174,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
         if (lrcContal!=null&&!lrcContal.isInterrupted())
         lrcContal.interrupt();
         musicsData.addFirst(musicsData.pollLast());
+        timeSeekBar.setProgress(0);
         initializeTheEnvironment();
         startOrpause(null);
     }
@@ -181,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
     public void lastMusic(View view) {
         mediaPlayer.release();
         musicsData.addLast(musicsData.pollFirst());
+        timeSeekBar.setProgress(0);
         initializeTheEnvironment();
         startOrpause(null);
     }
@@ -197,22 +277,25 @@ public class MainActivity extends AppCompatActivity {
                 .arrow(true)
                 .animStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
                 .show(view);
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    sleep(2000);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            qmuiPopup.dismiss();
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+        ((Switch)(qmuiPopup.getDecorView().findViewById(R.id.changeColor))).setChecked(colorRan);
+
+       //自动关闭
+//        new Thread(){
+//            @Override
+//            public void run() {
+//                try {
+//                    sleep(3000);
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            qmuiPopup.dismiss();
+//                        }
+//                    });
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }.start();
     }
 
     public void toshowfullsceen(final View view) {
@@ -253,23 +336,78 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeEffect(View view) {
-       QMUIPopup popup= QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
+       final QMUIPopup popup= QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
                 .preferredDirection(QMUIPopup.DIRECTION_TOP)
                 .view(R.layout.effect_change)
                 .edgeProtection(QMUIDisplayHelper.dp2px(this, 20))
                 .offsetX(QMUIDisplayHelper.dp2px(this, 20))
                 .offsetYIfBottom(QMUIDisplayHelper.dp2px(this, 5))
+               .radius(50)
                 .shadow(true)
                 .arrow(true)
                 .animStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
+               .onDismiss(new PopupWindow.OnDismissListener() {
+                   @Override
+                   public void onDismiss() {
+                       AutoShowMessage.showQMUIMessage(MainActivity.this,AutoShowMessage.SUCCESS,"将使用此声音效果");
+                   }
+               })
                 .show(view);
+       final EffectManage effectManage=new EffectManage(mediaPlayer);
+        ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.seek)).setOnSeekChangeListener(effectManage);
+        ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek1)).setOnSeekChangeListener(effectManage);
+        ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek2)).setOnSeekChangeListener(effectManage);
+        ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek3)).setOnSeekChangeListener(effectManage);
+        ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek4)).setOnSeekChangeListener(effectManage);
+        ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek5)).setOnSeekChangeListener(effectManage);
+        effectManage.initIndicatorSeekBar(popup.getDecorView());
+        ((QMUIAlphaTextView)popup.getDecorView().findViewById(R.id.resetEffect)).setOnClickListener(new QMUIAlphaTextView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final QMUIDialog qmuiDialog = new QMUIDialog.MessageDialogBuilder(MainActivity.this)
+                        .setTitle("确定要重置吗?")
+                        .addAction("取消", new QMUIDialogAction.ActionListener() {
+                            @Override
+                            public void onClick(QMUIDialog dialog, int index) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .addAction("确定", new QMUIDialogAction.ActionListener() {
+                            @Override
+                            public void onClick(QMUIDialog dialog, int index) {
+                                {
+                                    effectManage.reset();
+                                    effectManage.initIndicatorSeekBar(popup.getDecorView());
+                                    final QMUITipDialog qmuiTipDialog = new QMUITipDialog.Builder(MainActivity.this)
+                                            .setIconType(QMUITipDialog.Builder.ICON_TYPE_LOADING).create();
+                                    qmuiTipDialog.show();
+                                    new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                sleep(1000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                            qmuiTipDialog.cancel();
+//                        qmuiFullScreenPopup.show(linearLayout);
+                                        }
+                                    }.start();
+                                }
+                                dialog.dismiss();
+                            }
+                        })
+                        .create();
+                qmuiDialog.show();
+            }
+        });
 
 
 
     }
 
     public void changeColor(View view) {
-        if (view.isEnabled()){
+        if (((Switch)view).isChecked()){
             colorRan=true;
             lrcView.randomColor=true;
         }else {
@@ -290,6 +428,7 @@ public class MainActivity extends AppCompatActivity {
     private class PreparedListener implements MediaPlayer.OnPreparedListener {
         @Override
         public void onPrepared(MediaPlayer mp) {
+            SongListManager.getInstance().initList(musicsData,true);
            lrcContal=new LrcControl();
            lrcContal.start();
             mediaPlayer.start();
@@ -303,10 +442,13 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode==0x001)
-            Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
-        else
+        if (requestCode==0x001){
+            //            Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+
+        }
+        else {
             Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
+        }
     }
 
 class LrcControl extends Thread{
@@ -318,18 +460,19 @@ class LrcControl extends Thread{
             public void run() {
                 while (true){
                     try {
+                        if (!onSeekBar) {
+                            timeSeekBar.setProgress((float) ( mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01)));
+                        }
+                        if (mediaPlayer.isPlaying()&&onshow) {
+                            fullLrcview.changeCurrent(mediaPlayer.getCurrentPosition());
+                            fullLrcview.randomColor=colorRan;
+                        }
                         sleep(500);
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                if (!onSeekBar) {
-                    timeSeekBar.setProgress((float) ( mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01)));
-                }
 
-                    if (mediaPlayer.isPlaying()&&onshow) {
-                        fullLrcview.changeCurrent(mediaPlayer.getCurrentPosition());
-                        fullLrcview.randomColor=colorRan;
-                    }
+
                 }
             }
         }.start();
@@ -340,14 +483,12 @@ class LrcControl extends Thread{
                 if (mediaPlayer.isPlaying()){
                     lrcView.changeCurrent(mediaPlayer.getCurrentPosition());
                 }
-
+                Thread.sleep(300);
             } catch (Exception e) {
-            }
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
             }
         }
     }
 }
+
+
 }
