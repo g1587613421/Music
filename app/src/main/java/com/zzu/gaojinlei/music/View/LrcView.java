@@ -47,8 +47,8 @@ public class LrcView extends View {
 
 	private Paint mNormalPaint; // 常规的字体
 	private Paint mCurrentPaint; // 当前歌词的大小
-	int currentTextColor=0xffffffff;
-	int normalTextColor=0xffffffff;
+	public int currentTextColor=0xffffffff;
+	public int normalTextColor=0xffffffff;
 	private Bitmap mBackground = null;
 	private AttributeSet attributeSet;
 	public LrcView(Context context, AttributeSet attrs) {

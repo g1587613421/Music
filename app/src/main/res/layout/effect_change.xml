@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020. 高金磊编写
+  -->
+
+<com.qmuiteam.qmui.layout.QMUILinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lin"
+    android:background="@color/qmui_config_color_white"
+    android:orientation="vertical"
+    android:minWidth="350dp"
+    android:elevation="100dp"
+    android:theme="@style/QMUI.Compat"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+        android:layout_width="wrap_content"
+        android:text="重低音控制"
+        android:minWidth="150dp"
+        android:layout_height="wrap_content"/>
+
+
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/seek"
+        app:isb_ticks_count="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:isb_max="1000"
+        app:isb_min="0"
+        app:isb_show_thumb_text="true"
+        app:isb_show_indicator="none"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+            android:layout_width="wrap_content"
+            android:text="均衡控制"
+            android:layout_height="wrap_content"/>
+        <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+            android:textColor="@color/qmui_btn_blue_text"
+            android:text="重置"
+            android:onClick="reset"
+            android:alpha="0.5"
+            android:layout_marginLeft="5dp"
+            android:textSize="13dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:text="60Hz"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/ZQseek1"
+        app:isb_ticks_count="2"
+        app:isb_show_tick_texts="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:isb_max="1500"
+        app:isb_min="-1500"
+        app:isb_show_thumb_text="true"
+        app:isb_show_indicator="none" />
+    <TextView
+        android:text="230Hz"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/ZQseek2"
+        app:isb_ticks_count="2"
+        app:isb_show_tick_texts="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:isb_max="1500"
+        app:isb_min="-1500"
+        app:isb_show_thumb_text="true"
+        app:isb_show_indicator="none" />    <TextView
+    android:text="910Hz"
+    android:textAlignment="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/ZQseek3"
+        app:isb_ticks_count="2"
+        app:isb_show_tick_texts="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:isb_max="1500"
+        app:isb_min="-1500"
+        app:isb_show_thumb_text="true"
+        app:isb_show_indicator="none" />    <TextView
+    android:text="3600Hz"
+    android:textAlignment="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/ZQseek4"
+        app:isb_ticks_count="2"
+        app:isb_show_tick_texts="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:isb_max="1500"
+        app:isb_min="-1500"
+        app:isb_show_thumb_text="true"
+        app:isb_show_indicator="none" />
+    <TextView
+        android:text="1400Hz"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <com.warkiz.widget.IndicatorSeekBar
+        android:id="@+id/ZQseek5"
+        app:isb_show_tick_texts="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:isb_ticks_count="2"
+        app:isb_max="1500"
+        app:isb_min="-1500"
+        app:isb_show_thumb_text="true"
+        app:isb_show_indicator="none" />
+
+</com.qmuiteam.qmui.layout.QMUILinearLayout>

@@ -127,7 +127,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/QMUIRadiusImageView5"
-            lrc:currentTextColor="@android:color/holo_green_dark"
+            lrc:currentTextColor="#46BD4B"
             lrc:normalTextColor="#5F5E5E" />
 
         <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
@@ -144,6 +144,7 @@
             app:qmui_isRadiusAdjustBounds="true" />
 
         <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+            android:onClick="changeEffect"
             android:id="@+id/QMUIRoundButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

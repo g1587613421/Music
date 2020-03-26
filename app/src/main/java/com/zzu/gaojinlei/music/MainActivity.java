@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     LrcView fullLrcview;
     //降低全屏歌词的后台资源消耗
     boolean onshow=false;
+    //歌词颜色控制
+    boolean colorRan=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void showFullSceenLrc(final View view)
     {
-        QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
+       final QMUIPopup qmuiPopup= QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
                 .preferredDirection(QMUIPopup.DIRECTION_TOP)
                 .view(R.layout.pop_s)
                 .edgeProtection(QMUIDisplayHelper.dp2px(this, 20))
@@ -195,7 +197,22 @@ public class MainActivity extends AppCompatActivity {
                 .arrow(true)
                 .animStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
                 .show(view);
-
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    sleep(2000);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            qmuiPopup.dismiss();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     public void toshowfullsceen(final View view) {
@@ -232,6 +249,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
 
+
+    }
+
+    public void changeEffect(View view) {
+       QMUIPopup popup= QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
+                .preferredDirection(QMUIPopup.DIRECTION_TOP)
+                .view(R.layout.effect_change)
+                .edgeProtection(QMUIDisplayHelper.dp2px(this, 20))
+                .offsetX(QMUIDisplayHelper.dp2px(this, 20))
+                .offsetYIfBottom(QMUIDisplayHelper.dp2px(this, 5))
+                .shadow(true)
+                .arrow(true)
+                .animStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
+                .show(view);
+
+
+
+    }
+
+    public void changeColor(View view) {
+        if (view.isEnabled()){
+            colorRan=true;
+            lrcView.randomColor=true;
+        }else {
+            colorRan=false;
+            lrcView.currentTextColor=0xFF46BD4B;
+            fullLrcview.currentTextColor=0xFF46BD4B;
+        }
     }
 
     private class CompletionListener implements MediaPlayer.OnCompletionListener{
@@ -283,7 +328,7 @@ class LrcControl extends Thread{
 
                     if (mediaPlayer.isPlaying()&&onshow) {
                         fullLrcview.changeCurrent(mediaPlayer.getCurrentPosition());
-                        fullLrcview.randomColor=true;
+                        fullLrcview.randomColor=colorRan;
                     }
                 }
             }
