@@ -5,19 +5,19 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:background="#C8494545"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <com.zzu.gaojinlei.music.View.LrcView
                 android:id="@+id/lrcView"
-                lrc:currentTextColor="@android:color/holo_green_dark"
+                lrc:currentTextColor="#AA46BD4B"
                 lrc:normalTextColor="#BFF5F2F2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

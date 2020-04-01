@@ -20,12 +20,12 @@
         app:qmui_isRadiusAdjustBounds="true" />
 
     <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
-        android:layout_marginLeft="10dp"
-        android:textColor="@color/qmui_btn_blue_text"
-        android:alpha="0.8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="彩色歌词"/>
+        android:layout_marginLeft="10dp"
+        android:alpha="0.8"
+        android:text="彩色歌词"
+        android:textColor="@color/qmui_btn_blue_text" />
     <Switch
         android:onClick="changeColor"
         android:id="@+id/changeColor"

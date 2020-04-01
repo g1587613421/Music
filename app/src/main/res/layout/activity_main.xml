@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.Design.NoActionBar"
+    android:theme="@style/NoActionBar"
     android:id="@+id/drawer"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
+
 
     <include layout="@layout/main_index"/>
     <com.google.android.material.navigation.NavigationView

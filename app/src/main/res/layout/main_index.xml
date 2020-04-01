@@ -27,11 +27,10 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_marginStart="180dp"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="52dp"
             android:layout_marginEnd="181dp"
             android:src="@drawable/music_default_bg"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:qmui_corner_radius="100dp" />
@@ -52,6 +51,11 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="24dp"
+                app:isb_thumb_color="#03A9F4"
+                app:isb_indicator_text_color="#03A9F4"
+                app:isb_tick_texts_color="#03A9F4"
+                app:isb_thumb_text_color="#03A9F4"
+                app:isb_track_progress_color="#03A9F4"
                 app:isb_max="1"
                 app:isb_min="0"
                 app:isb_show_indicator="none"
@@ -123,19 +127,6 @@
                 app:qmui_corner_radius="20dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.zzu.gaojinlei.music.View.LrcView
-            android:id="@+id/lv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="72dp"
-            android:scrollbars="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/QMUIRadiusImageView5"
-            lrc:currentTextColor="#46BD4B"
-            lrc:normalTextColor="#5F5E5E" />
-
         <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -162,6 +153,29 @@
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:qmui_isRadiusAdjustBounds="true" />
+
+        <com.zzu.gaojinlei.music.View.MyVisualizerView
+            android:id="@+id/myVisualizer"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="300dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.zzu.gaojinlei.music.View.LrcView
+            android:id="@+id/lv"
+            android:layout_width="match_parent"
+            android:layout_height="148dp"
+            android:layout_marginTop="56dp"
+            android:scrollbars="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/QMUIRadiusImageView5"
+            lrc:currentTextColor="#46BD4B"
+            lrc:normalTextColor="#5F5E5E" />
 
         <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
             android:id="@+id/songname"
