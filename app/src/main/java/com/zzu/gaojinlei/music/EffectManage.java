@@ -21,12 +21,23 @@ import com.warkiz.widget.SeekParams;
  */
 public class EffectManage implements OnSeekChangeListener {
     static int t1, ZQ1 = 0, ZQ2 = 0, ZQ3 = 0, ZQ4 = 0, ZQ5 = 0;
-    MediaPlayer mediaPlayer;
-    BassBoost bassBoost;
-    Equalizer equalizer;
+    static EffectManage effectManage;
+     MediaPlayer mediaPlayer;
+    static BassBoost bassBoost;
+    static Equalizer equalizer;
     boolean equalizerEnable=true;
     //启动监听服务
-    public EffectManage(MediaPlayer mediaPlayer){
+    public static EffectManage getInstance() {
+        if (effectManage==null||effectManage.mediaPlayer!=MainActivity.getMediaPlayer())
+            effectManage=getInstance(MainActivity.getMediaPlayer());
+        return effectManage;
+    }
+
+//后续扩展使用
+    private static EffectManage getInstance( MediaPlayer mediaPlayer) {
+        return new EffectManage(mediaPlayer);
+    }
+    private EffectManage(MediaPlayer mediaPlayer){
         if (mediaPlayer==null)
             return;
         this.mediaPlayer=mediaPlayer;
@@ -62,12 +73,16 @@ public class EffectManage implements OnSeekChangeListener {
     }
 
     public void update() {
+        if (!mediaPlayer.isPlaying())
+            return;
+        bassBoost.setEnabled(t1!=0);
         bassBoost.setStrength((short)t1);
+        equalizer.setEnabled(true);
         equalizer.setBandLevel((short) 0,(short) ZQ1);
-        equalizer.setBandLevel((short) 0,(short) ZQ2);
-        equalizer.setBandLevel((short) 0,(short) ZQ3);
-        equalizer.setBandLevel((short) 0,(short) ZQ4);
-        equalizer.setBandLevel((short) 0,(short) ZQ5);
+        equalizer.setBandLevel((short) 1,(short) ZQ2);
+        equalizer.setBandLevel((short) 2,(short) ZQ3);
+        equalizer.setBandLevel((short) 3,(short) ZQ4);
+        equalizer.setBandLevel((short) 4,(short) ZQ5);
     }
 
     @Override
@@ -90,6 +105,6 @@ public class EffectManage implements OnSeekChangeListener {
     }
     public void reset(){
         ZQ1=ZQ2=ZQ3=ZQ4=ZQ5=t1=0;
-
+        update();
     }
 }

@@ -3,13 +3,16 @@ package com.zzu.gaojinlei.music;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.DragStartHelper;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,6 +45,7 @@ import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 import com.zzu.gaojinlei.music.View.LrcView;
+import com.zzu.gaojinlei.music.View.MyVisualizerView;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -51,9 +55,16 @@ public class MainActivity extends AppCompatActivity {
     Handler handler=new Handler();
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE" };
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+    };
+    //申请录音权限
+    private  final int GET_RECODE_AUDIO = 2;
+    private static String[] PERMISSION_AUDIO = {
+            Manifest.permission.RECORD_AUDIO
+    };
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    MediaPlayer mediaPlayer;
+   static MediaPlayer mediaPlayer;
+   public static MyVisualizerView myVisualizerView;
     CoverManage coverManage;//封面管理器
    static private LinkedList<MusicData> musicsData=new LinkedList<>();
     boolean ispause=false;
@@ -71,8 +82,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //initPermission
+        initPermission();
         //初始化数据
-        musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
+        musicsData.addLast(new MusicData(R.raw.shaonian,R.string.少年,R.drawable.shaonian,"少年","梦然"));
         musicsData.add(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg,"盛夏","毛不易"));
         musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
         //初始化音乐环境
@@ -82,17 +95,32 @@ public class MainActivity extends AppCompatActivity {
         //侧边栏
         initDrawerLayout();
 
+        myVisualizerView=findViewById(R.id.myVisualizer);
     }
 
+    private void initPermission() {
+        int permission = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSION_AUDIO,
+                    GET_RECODE_AUDIO);
+        }
+    }
+
+    boolean isOpenDrawer=false;
     private void initDrawerLayout() {
+
         //启动组件监听服务
-      final Thread listrner=new Thread(){
+      new Thread(){
             @Override
             public void run() {
                 while (true) {
-                    try {
-                        sleep(500);
-                    } catch (InterruptedException e) {
+                    while (!isOpenDrawer){
+                        try {
+                            sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     if (SongListManager.change) {
                         SongListManager.change = false;
@@ -113,19 +141,44 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        };
+        }.start();
         SongListManager.getInstance(this, (QMUIGroupListView) findViewById(R.id.listView));
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);/*重点，获取主界面的布局，因为没有这句话我才报错*/
-        drawerLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
                 SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
-                if (hasFocus)
-                    listrner.start();
-                else
-                    listrner.interrupt();
+                isOpenDrawer=true;
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                isOpenDrawer=false;
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
             }
         });
+//8.0以上不适用
+//        drawerLayout.setFocusableInTouchMode(true);
+//        drawerLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
+//                if (hasFocus)
+//                    listrner.start();
+//                else
+//                    listrner.stop();
+//            }
+//        });
 
 
     }
@@ -194,8 +247,7 @@ public class MainActivity extends AppCompatActivity {
 //初始化歌词控件
         initlrc(getResources().getString(musicsData.peek().lrc).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().lrc));
         coverManage.setImage(musicsData.peek().coverImage);
-        //绑定音频到控制器
-        new EffectManage(mediaPlayer).update();
+
 
 
     }
@@ -225,7 +277,6 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.start();
                 ispause=false;
             }else {
-
                 try {
                     mediaPlayer.prepareAsync();
                 } catch (IllegalStateException e) {
@@ -353,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
                    }
                })
                 .show(view);
-       final EffectManage effectManage=new EffectManage(mediaPlayer);
+       final EffectManage effectManage=EffectManage.getInstance();
         ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.seek)).setOnSeekChangeListener(effectManage);
         ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek1)).setOnSeekChangeListener(effectManage);
         ((IndicatorSeekBar)popup.getDecorView().findViewById(R.id.ZQseek2)).setOnSeekChangeListener(effectManage);
@@ -412,8 +463,7 @@ public class MainActivity extends AppCompatActivity {
             lrcView.randomColor=true;
         }else {
             colorRan=false;
-            lrcView.currentTextColor=0xFF46BD4B;
-            fullLrcview.currentTextColor=0xFF46BD4B;
+            lrcView.randomColor=false;
         }
     }
 
@@ -428,12 +478,20 @@ public class MainActivity extends AppCompatActivity {
     private class PreparedListener implements MediaPlayer.OnPreparedListener {
         @Override
         public void onPrepared(MediaPlayer mp) {
+            VisualizerManage.getInstance(myVisualizerView);
             SongListManager.getInstance().initList(musicsData,true);
            lrcContal=new LrcControl();
            lrcContal.start();
             mediaPlayer.start();
+            //绑定音频到音效控制器
+            EffectManage.getInstance().update();
         }
     }
+
+    public static MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
     /**
      * 权限回调监听
      * @param requestCode

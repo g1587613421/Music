@@ -17,25 +17,30 @@ import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
  * @项目名 Music
  */
 public class AutoShowMessage {
+   private static Context scontext;
+    private static AutoShowMessage autoShowMessage;
     static public  int deftime=800;
     //默认-1是不带图片的
      static final int FAIL=QMUITipDialog.Builder.ICON_TYPE_FAIL;
      static final int LOADING=QMUITipDialog.Builder.ICON_TYPE_LOADING;
      static final int SUCCESS=QMUITipDialog.Builder.ICON_TYPE_SUCCESS;
      static final int NOTHING=QMUITipDialog.Builder.ICON_TYPE_NOTHING;
-     //单例模式
-     private AutoShowMessage(){
-
+     //单例模式--con一次启动永远任意使用
+     private AutoShowMessage(Context con){
+         scontext=con;
      }
 
     /**
      * 通用消息提示控制器-核心层
-     * @param context--注意此处必须是要显示消息的activity的上下文,如果是getApplication的将会报错(无法定位显示位置)--我感觉官方可以改进一下--可以去栈里找到当前activity-就像Toast一样
+     * contex-不强制但是有可能出现下述错误!!!!
+     * @param context--注意此处必须是要显示消息的activity的上下文,如果是getApplication或者不是当前主线程的将会报错(无法定位显示位置)--我感觉官方可以改进一下--可以去栈里找到当前activity-就像Toast一样
      * @param setIconType
      * @param title
      * @param time
      */
     public static void  showQMUIMessage(Context context,int setIconType, String title,final int time){
+        if (context==null)//兼容如果取不到contex的是否默认使用初始化位置的---不推荐使用
+            context=scontext;
         final QMUITipDialog tipDialog;
 
         if (setIconType!=-1)
@@ -75,7 +80,17 @@ public class AutoShowMessage {
         showQMUIMessage(context,title,deftime);
     }
 
-    public static AutoShowMessage getInstance() {
-        return new AutoShowMessage();
+    public static AutoShowMessage getInstance(Context con) {
+        if (autoShowMessage==null)
+            autoShowMessage=new AutoShowMessage(con);
+        return autoShowMessage;
+    }
+
+    public static int getDeftime() {
+        return deftime;
+    }
+
+    public static void setDeftime(int deftime) {
+        AutoShowMessage.deftime = deftime;
     }
 }
