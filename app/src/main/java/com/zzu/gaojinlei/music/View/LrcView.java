@@ -44,7 +44,7 @@ public class LrcView extends View {
 
 	private float mTextSize=50.0f; // 字体
 	private float mDividerHeight=15.0f; // 行间距
-
+	TypedArray ta;
 	private Paint mNormalPaint; // 常规的字体
 	private Paint mCurrentPaint; // 当前歌词的大小
 	public int currentTextColor=0xffffffff;
@@ -66,7 +66,8 @@ public class LrcView extends View {
 		attributeSet=attrs;
 		// <begin>
 		// 解析自定义属性
-		TypedArray ta = getContext().obtainStyledAttributes(attrs,R.styleable.Lrc);
+
+		ta = getContext().obtainStyledAttributes(attrs,R.styleable.Lrc);
 		mTextSize = ta.getDimension(R.styleable.Lrc_textSize, mTextSize);
 		mRows = ta.getInteger(R.styleable.Lrc_rows, mRows);
 		mDividerHeight = ta.getDimension(R.styleable.Lrc_dividerHeight, mDividerHeight);
@@ -116,8 +117,9 @@ public class LrcView extends View {
 		}
 		if (randomColor){
 			currentTextColor=colors[(int)( colors.length* Math.random())];
-			mCurrentPaint.setColor(currentTextColor);
 		}
+		else currentTextColor=0xFF03A9F4;
+		mCurrentPaint.setColor(currentTextColor);
 		canvas.save();
 		canvas.clipRect(0, 0, mViewWidth, mLrcHeight);
 
@@ -158,7 +160,8 @@ public class LrcView extends View {
 				.replaceAll("\r", "").replaceAll("\n", "").trim());
 		long secInt = Long.parseLong(sec[0].replaceAll("\\D+", "")
 				.replaceAll("\r", "").replaceAll("\n", "").trim());
-		long milInt = Long.parseLong(sec[1].replaceAll("\\D+", "")
+		//下面的这个数组原作者从1开始的...不知道他咋想的
+		long milInt = Long.parseLong(sec[0].replaceAll("\\D+", "")
 				.replaceAll("\r", "").replaceAll("\n", "").trim());
 		
 		return minInt * 60 * 1000 + secInt * 1000 + milInt * 10;
