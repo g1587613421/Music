@@ -286,13 +286,13 @@ public class MainActivity extends AppCompatActivity {
             }
             coverManage.start();
             Toast.makeText(this, "开始播放", Toast.LENGTH_SHORT).show();
-            ((QMUIRadiusImageView) findViewById(R.id.control)).setImageResource(R.drawable.tingzhi);
+            ((QMUIRadiusImageView) findViewById(R.id.control)).setBackgroundResource(R.drawable.tingzh_redi);
             ((QMUIRadiusImageView) findViewById(R.id.control)).setColorFilter(Color.RED);
         } else {
             mediaPlayer.pause();
             coverManage.pause();
             ispause=true;
-            ((QMUIRadiusImageView) findViewById(R.id.control)).setImageResource(R.drawable.bofang);
+            ((QMUIRadiusImageView) findViewById(R.id.control)).setBackgroundResource(R.drawable.bofang_green);
             ((QMUIRadiusImageView) findViewById(R.id.control)).setColorFilter(Color.GREEN);
         }
 

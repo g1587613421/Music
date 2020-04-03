@@ -72,7 +72,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
 
-                android:src="@drawable/suiji"
+                android:background="@drawable/suiji"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:qmui_corner_radius="20dp" />
@@ -84,8 +84,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
                 android:onClick="lastMusic"
-
-                android:src="@drawable/shangyishou"
+                android:background="@drawable/shangyishou"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView"
                 app:qmui_corner_radius="25dp" />
@@ -97,7 +96,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
                 android:onClick="startOrpause"
-                android:src="@drawable/bofang"
+                android:background="@drawable/bofang"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView2"
                 app:qmui_corner_radius="25dp" />
@@ -110,7 +109,7 @@
                 android:layout_marginBottom="8dp"
                 android:onClick="nextMusic"
 
-                android:src="@drawable/xiayishou"
+                android:background="@drawable/xiayishou"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/control"
                 app:qmui_corner_radius="25dp" />
@@ -121,7 +120,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
 
-                android:src="@drawable/xihuan"
+                android:background="@drawable/xihuan"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView4"
                 app:qmui_corner_radius="20dp" />
