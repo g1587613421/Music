@@ -38,10 +38,11 @@ public class AutoShowMessage {
      * @param title
      * @param time
      */
+    static QMUITipDialog tipDialog;
     public static void  showQMUIMessage(Context context,int setIconType, String title,final int time){
         if (context==null)//兼容如果取不到contex的是否默认使用初始化位置的---不推荐使用
             context=scontext;
-        final QMUITipDialog tipDialog;
+
 
         if (setIconType!=-1)
             tipDialog = new QMUITipDialog.Builder(context).setTipWord(title).setIconType(setIconType).create();
