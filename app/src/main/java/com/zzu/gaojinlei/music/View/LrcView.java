@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressLint("DrawAllocation")
-public class LrcView extends View {
+public class LrcView extends View implements LrcViewInteface {
 	private List<String> mLrcs = new ArrayList<String>(); // 存放歌词
 	private List<Long> mTimes = new ArrayList<Long>(); // 存放时间
 
@@ -183,11 +183,13 @@ public class LrcView extends View {
 		return result;
 	}
 
+	@Override
 	public void changeProcess(){
 		mNextTime=0;
 		mCurrentLine=1;
 	}
 	// 传入当前播放时间
+	@Override
 	public synchronized void changeCurrent(long time) {
 		//下一句还没开始
 		if (mNextTime > time) {
@@ -211,6 +213,7 @@ public class LrcView extends View {
 	 *
 	 * @param data
 	 */
+	@Override
 	public void setLrcString(String data){
 		mLrcs.clear();
 		mTimes.clear();
@@ -229,6 +232,7 @@ public class LrcView extends View {
 
 	}
 	// 设置lrc的路径
+	@Override
 	public void setLrcPath(String path) throws Exception {
 		mLrcs.clear();
 		mTimes.clear();
@@ -264,36 +268,44 @@ public class LrcView extends View {
 
 	// 外部提供方法
 	// 设置背景图片
+	@Override
 	public void setBackground(Bitmap bmp) {
 		mBackground = bmp;
 	}
 
+	@Override
 	public void setRefreshTime(int refreshTime) {
 		this.refreshTime = refreshTime;
 	}
 
+	@Override
 	public int getmLrcHeight() {
 		return mLrcHeight;
 	}
 
+	@Override
 	public void setmLrcHeight(int mLrcHeight) {
 		this.mLrcHeight = mLrcHeight;
 	}
 
+	@Override
 	public int getmRows() {
 		return mRows;
 	}
 
+	@Override
 	public void setmRows(int mRows) {
 		this.mRows = mRows;
 		initViews(attributeSet);
 	}
 
+	@Override
 	public void setmTextSize(float mTextSize) {
 		this.mTextSize = mTextSize;
 		initViews(attributeSet);
 	}
 
+	@Override
 	public void setmDividerHeight(float mDividerHeight) {
 		this.mDividerHeight = mDividerHeight;
 	}
