@@ -8,8 +8,8 @@ import android.content.Context;
 
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
 
-/**
- * 封装QMUI官方的QMUITipDialog
+/**适配器类
+ * 封装QMUI官方的QMUITipDialog(适配器模式)
  * 不知道QMUI官方怎么设计的每次启动关闭比安卓自带的Toast还要麻烦--这里针对我个人习惯改装一下
  * @author 高金磊
  * @version 1.0
@@ -20,6 +20,7 @@ public class AutoShowMessage {
    private volatile static Context scontext;
    //防止指令重排
     private volatile static AutoShowMessage autoShowMessage;
+    private volatile static QMUITipDialog tipDialog;
     static private   int deftime=800;
     //默认-1是不带图片的
      static final int FAIL=QMUITipDialog.Builder.ICON_TYPE_FAIL;
@@ -51,7 +52,7 @@ public class AutoShowMessage {
         }
         return autoShowMessage;
     }
-    /**
+    /**充当建造者
      * 通用消息提示控制器-核心层
      * contex-不强制但是有可能出现下述错误!!!!
      * @param context--注意此处必须是要显示消息的activity的上下文,如果是getApplication或者不是当前主线程的将会报错(无法定位显示位置)--我感觉官方可以改进一下--可以去栈里找到当前activity-就像Toast一样
@@ -59,7 +60,6 @@ public class AutoShowMessage {
      * @param title
      * @param time
      */
-    static QMUITipDialog tipDialog;
     public static void  showQMUIMessage(Context context,int setIconType, String title,final int time){
         if (context==null)//兼容如果取不到contex的是否默认使用初始化位置的---不推荐使用
             context=scontext;
