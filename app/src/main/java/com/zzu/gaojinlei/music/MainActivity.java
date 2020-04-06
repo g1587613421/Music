@@ -3,47 +3,40 @@ package com.zzu.gaojinlei.music;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.DragStartHelper;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.media.audiofx.Visualizer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.qmuiteam.qmui.alpha.QMUIAlphaTextView;
-import com.qmuiteam.qmui.layout.QMUIButton;
 import com.qmuiteam.qmui.layout.QMUILinearLayout;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
-import com.qmuiteam.qmui.widget.QMUILoadingView;
 import com.qmuiteam.qmui.widget.QMUIRadiusImageView;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
-import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 import com.qmuiteam.qmui.widget.popup.QMUIFullScreenPopup;
-import com.qmuiteam.qmui.widget.popup.QMUINormalPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopup;
 import com.qmuiteam.qmui.widget.popup.QMUIPopups;
-import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton;
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
+import com.zzu.gaojinlei.music.Data.MusicData;
+import com.zzu.gaojinlei.music.Tools.AutoShowMessage;
+import com.zzu.gaojinlei.music.Manager.CoverManage;
+import com.zzu.gaojinlei.music.Manager.EffectManage;
+import com.zzu.gaojinlei.music.Manager.SongListManager;
+import com.zzu.gaojinlei.music.Manager.VisualizerManage;
 import com.zzu.gaojinlei.music.View.LrcView;
 import com.zzu.gaojinlei.music.View.MyVisualizerView;
 
@@ -234,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         initlCoverManage();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mediaPlayer.setDataSource(getResources().openRawResourceFd((int) musicsData.peek().song));
+                mediaPlayer.setDataSource(getResources().openRawResourceFd((int) musicsData.peek().getSong()));
             }
         } catch (IOException e) {
            AutoShowMessage.showQMUIMessage(this,"手机版本过低无法播放",AutoShowMessage.FAIL);
@@ -242,11 +235,11 @@ public class MainActivity extends AppCompatActivity {
 
         mediaPlayer.setOnPreparedListener(new PreparedListener());
         mediaPlayer.setOnCompletionListener(new CompletionListener());
-        ((QMUIAlphaTextView)findViewById(R.id.songname)).setText(musicsData.peek().name);
-        ((QMUIAlphaTextView)findViewById(R.id.player)).setText((musicsData.peek().singer));
+        ((QMUIAlphaTextView)findViewById(R.id.songname)).setText(musicsData.peek().getName());
+        ((QMUIAlphaTextView)findViewById(R.id.player)).setText((musicsData.peek().getSinger()));
 //初始化歌词控件
-        initlrc(getResources().getString(musicsData.peek().lrc).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().lrc));
-        coverManage.setImage(musicsData.peek().coverImage);
+        initlrc(getResources().getString(musicsData.peek().getLrc()).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().getLrc()));
+        coverManage.setImage(musicsData.peek().getCoverImage());
 
 
 
@@ -361,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
         fullLrcview.setmTextSize(60);
         fullLrcview.setmDividerHeight(20f);
         onshow=true;
-        fullLrcview.setLrcString(getResources().getString(musicsData.peek().lrc));
+        fullLrcview.setLrcString(getResources().getString(musicsData.peek().getLrc()));
 //        Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.drawable.fullscreenbg);
 //        fullLrcview.setBackground(bitmap);
         //此处等待资源加载完毕,不让将处于卡顿状态

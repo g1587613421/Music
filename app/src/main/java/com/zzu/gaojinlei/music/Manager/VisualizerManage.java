@@ -2,15 +2,12 @@
  * Copyright (c) 2020. 高金磊编写
  */
 
-package com.zzu.gaojinlei.music;
+package com.zzu.gaojinlei.music.Manager;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.audiofx.Visualizer;
 
-import androidx.core.app.ActivityCompat;
-
+import com.zzu.gaojinlei.music.MainActivity;
+import com.zzu.gaojinlei.music.ManagerInteface.VisualizerManageInterface;
 import com.zzu.gaojinlei.music.View.MyVisualizerView;
 
 /**
@@ -19,13 +16,13 @@ import com.zzu.gaojinlei.music.View.MyVisualizerView;
  * @date 2020/3/27 6:09
  * @项目名 Music
  */
-public class VisualizerManage {
-    static VisualizerManage visualizerManage;
+public class VisualizerManage implements VisualizerManageInterface {
+   private static VisualizerManage visualizerManage;
     // 创建MyVisualizerView组件，用于显示波形图
-   static MyVisualizerView mVisualizerView;
+    private static MyVisualizerView mVisualizerView;
     // 相当于设置Visualizer负责显示该MediaPlayer的音频数据
-    static Visualizer mVisualizer;
-    static int SessionID=0;
+    private static Visualizer mVisualizer;
+    private static int SessionID=0;
     public static VisualizerManage getInstance(MyVisualizerView mVisualizerView) {
         if (MainActivity.getMediaPlayer().getAudioSessionId()==SessionID)
         return visualizerManage;

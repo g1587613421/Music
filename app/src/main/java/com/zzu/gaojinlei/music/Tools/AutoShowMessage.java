@@ -2,7 +2,7 @@
  * Copyright (c) 2020. 高金磊编写
  */
 
-package com.zzu.gaojinlei.music;
+package com.zzu.gaojinlei.music.Tools;
 
 import android.content.Context;
 
@@ -21,12 +21,14 @@ public class AutoShowMessage {
    //防止指令重排
     private volatile static AutoShowMessage autoShowMessage;
     private volatile static QMUITipDialog tipDialog;
-    static private   int deftime=800;
+    private static  int deftime=800;
     //默认-1是不带图片的
-     static final int FAIL=QMUITipDialog.Builder.ICON_TYPE_FAIL;
-     static final int LOADING=QMUITipDialog.Builder.ICON_TYPE_LOADING;
-     static final int SUCCESS=QMUITipDialog.Builder.ICON_TYPE_SUCCESS;
-     static final int NOTHING=QMUITipDialog.Builder.ICON_TYPE_NOTHING;
+    public static final int FAIL=QMUITipDialog.Builder.ICON_TYPE_FAIL;
+    public static final int LOADING=QMUITipDialog.Builder.ICON_TYPE_LOADING;
+    public static final int SUCCESS=QMUITipDialog.Builder.ICON_TYPE_SUCCESS;
+    public static final int NOTHING=QMUITipDialog.Builder.ICON_TYPE_NOTHING;
+     //锁标示符
+     private static final Object lock=new Object();
      //单例模式--con一次启动永远任意使用
      private AutoShowMessage(Context con){
          scontext=con;
@@ -44,7 +46,7 @@ public class AutoShowMessage {
         if (autoShowMessage==null)
         {
             //保证多线程安全--volatile防止多线程指令重排问题
-            synchronized (autoShowMessage){
+            synchronized (lock){
                 //再次确认--防止多线程下内存溢出
                 if (autoShowMessage==null)
                     autoShowMessage=new AutoShowMessage(con);
@@ -64,7 +66,7 @@ public class AutoShowMessage {
         if (context==null)//兼容如果取不到contex的是否默认使用初始化位置的---不推荐使用
             context=scontext;
         //防止提示堆叠
-        synchronized (tipDialog){
+        synchronized (lock){
         if (setIconType!=-1)
             tipDialog = new QMUITipDialog.Builder(context).setTipWord(title).setIconType(setIconType).create();
         else tipDialog = new QMUITipDialog.Builder(context).setTipWord(title).create();

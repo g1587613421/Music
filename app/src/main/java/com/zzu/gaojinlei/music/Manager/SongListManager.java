@@ -2,15 +2,15 @@
  * Copyright (c) 2020. 高金磊编写
  */
 
-package com.zzu.gaojinlei.music;
+package com.zzu.gaojinlei.music.Manager;
 
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
+import com.zzu.gaojinlei.music.Data.MusicData;
+import com.zzu.gaojinlei.music.R;
 
 import java.util.LinkedList;
 
@@ -20,7 +20,7 @@ import java.util.LinkedList;
  * @date 2020/3/26 20:32
  * @项目名 Music
  */
-public class SongListManager {
+public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.SongListManagerInterface {
     public static boolean change=false;
     private static SongListManager songListManager;
     private QMUIGroupListView mGroupListView;
@@ -46,16 +46,17 @@ public class SongListManager {
         this.mGroupListView=mGroupListView;
         this.context=context;
     }
+   @Override
    public void initList(final LinkedList<MusicData> linkedList, boolean isplaying){
         mGroupListView.removeAllViews();
        QMUIGroupListView.Section section=QMUIGroupListView.newSection(context)
                .setTitle("音乐列表");
        int count=0;
        for (MusicData musicData : linkedList) {
-           QMUICommonListItemView itemWithDetailBelow = mGroupListView.createItemView(musicData.name);
+           QMUICommonListItemView itemWithDetailBelow = mGroupListView.createItemView(musicData.getName());
            itemWithDetailBelow.setOrientation(QMUICommonListItemView.VERTICAL);
-           itemWithDetailBelow.setDetailText(musicData.singer);//默认文字在左边   描述文字在标题下边
-           itemWithDetailBelow.setImageDrawable(context.getDrawable(isplaying?R.drawable.nowpaying_green:musicData.coverImage));
+           itemWithDetailBelow.setDetailText(musicData.getSinger());//默认文字在左边   描述文字在标题下边
+           itemWithDetailBelow.setImageDrawable(context.getDrawable(isplaying? R.drawable.nowpaying_green:musicData.getCoverImage()));
            isplaying=false;
            final int finalCount = count;
            View.OnClickListener onClickListener = new View.OnClickListener() {

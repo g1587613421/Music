@@ -1,12 +1,16 @@
-package com.zzu.gaojinlei.music;
+/*
+ * Copyright (c) 2020. 高金磊编写
+ */
+
+package com.zzu.gaojinlei.music.Manager;
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 
 import com.qmuiteam.qmui.widget.QMUIRadiusImageView;
+import com.zzu.gaojinlei.music.R;
 
 /**
  * @author 高金磊
@@ -14,7 +18,7 @@ import com.qmuiteam.qmui.widget.QMUIRadiusImageView;
  * @date 2020/3/25 10:44
  * @项目名 Music
  */
-public class CoverManage {
+public class CoverManage implements com.zzu.gaojinlei.music.ManagerInteface.CoverManageInterface {
    static QMUIRadiusImageView cover;
   static CoverManage coverManage;
 //  static Thread thread;
@@ -52,24 +56,31 @@ public class CoverManage {
         return coverManage==null?new CoverManage():coverManage;
     }
 
-    public  void setCover(QMUIRadiusImageView cover,Context context) {
+    @Override
+    public  CoverManage setCover(QMUIRadiusImageView cover, Context context) {//保留建造者模式
         this.context=context;
         CoverManage.cover = cover;
+        return coverManage;
     }
-    public void setImage(int image){
+    @Override
+    public CoverManage setImage(int image){
         cover.setImageResource(image);
+        return coverManage;
     }
+    @Override
     public  QMUIRadiusImageView getCover() {
         return cover;
     }
-public  void start(){
+@Override
+public synchronized void start(){//未处理重复调用--但是无论如何重复效果还是相同的,这里不再处理
     LinearInterpolator lir = new LinearInterpolator();
     mAnimation = AnimationUtils.loadAnimation(context, R.anim.coveranim);
     mAnimation.setInterpolator(lir);
     cover.startAnimation(mAnimation);
 //    thread.start();
 }
-    public void pause(){
+    @Override
+    public synchronized void pause(){
 //        thread.interrupt();
 //        cover.setAnimation(null);
         cover.clearAnimation();
