@@ -17,9 +17,10 @@ import com.qmuiteam.qmui.widget.dialog.QMUITipDialog;
  * @项目名 Music
  */
 public class AutoShowMessage {
-   private static Context scontext;
-    private static AutoShowMessage autoShowMessage;
-    static public  int deftime=800;
+   private volatile static Context scontext;
+   //防止指令重排
+    private volatile static AutoShowMessage autoShowMessage;
+    static private   int deftime=800;
     //默认-1是不带图片的
      static final int FAIL=QMUITipDialog.Builder.ICON_TYPE_FAIL;
      static final int LOADING=QMUITipDialog.Builder.ICON_TYPE_LOADING;
@@ -30,6 +31,26 @@ public class AutoShowMessage {
          scontext=con;
      }
 
+    /**
+     * 单例懒汉模式
+     * @param con 当前上下文
+     * @return autoShowMessage
+     */
+     public  static AutoShowMessage getInstance(Context con) {
+         if (con!=null&&con != scontext) {
+             scontext=con;
+         }
+        if (autoShowMessage==null)
+        {
+            //保证多线程安全--volatile防止多线程指令重排问题
+            synchronized (autoShowMessage){
+                //再次确认--防止多线程下内存溢出
+                if (autoShowMessage==null)
+                    autoShowMessage=new AutoShowMessage(con);
+            }
+        }
+        return autoShowMessage;
+    }
     /**
      * 通用消息提示控制器-核心层
      * contex-不强制但是有可能出现下述错误!!!!
@@ -42,13 +63,12 @@ public class AutoShowMessage {
     public static void  showQMUIMessage(Context context,int setIconType, String title,final int time){
         if (context==null)//兼容如果取不到contex的是否默认使用初始化位置的---不推荐使用
             context=scontext;
-
-
+        //防止提示堆叠
+        synchronized (tipDialog){
         if (setIconType!=-1)
             tipDialog = new QMUITipDialog.Builder(context).setTipWord(title).setIconType(setIconType).create();
         else tipDialog = new QMUITipDialog.Builder(context).setTipWord(title).create();
-        //线程锁便于以后程序的扩展--暂时没用
-        synchronized (tipDialog){
+
         tipDialog.show();
         new Thread(){
             @Override
@@ -81,11 +101,7 @@ public class AutoShowMessage {
         showQMUIMessage(context,title,deftime);
     }
 
-    public static AutoShowMessage getInstance(Context con) {
-        if (autoShowMessage==null)
-            autoShowMessage=new AutoShowMessage(con);
-        return autoShowMessage;
-    }
+
 
     public static int getDeftime() {
         return deftime;
