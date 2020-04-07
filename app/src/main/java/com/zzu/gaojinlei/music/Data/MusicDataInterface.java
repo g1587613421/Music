@@ -11,6 +11,11 @@ package com.zzu.gaojinlei.music.Data;
  * @项目名 Music
  */
 interface MusicDataInterface {
+    int song = -1;
+     int lrc = -1;
+     int coverImage=-1;
+     String name="未知";
+     String singer="未知";
     int getSong();
 
     void setSong(int song);

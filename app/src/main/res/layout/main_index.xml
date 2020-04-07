@@ -81,7 +81,7 @@
                 app:qmui_corner_radius="20dp" />
 
             <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                android:id="@+id/QMUIRadiusImageView2"
+                android:id="@+id/QMUIRadiusnot_pre"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
@@ -101,7 +101,7 @@
                 android:onClick="startOrpause"
                 android:background="@drawable/bofang"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView2"
+                app:layout_constraintStart_toEndOf="@+id/QMUIRadiusnot_pre"
                 app:qmui_corner_radius="25dp" />
 
             <com.qmuiteam.qmui.widget.QMUIRadiusImageView

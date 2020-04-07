@@ -32,6 +32,7 @@ import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 import com.zzu.gaojinlei.music.Data.MusicData;
+import com.zzu.gaojinlei.music.Notify.NotifyManager;
 import com.zzu.gaojinlei.music.Tools.AutoShowMessage;
 import com.zzu.gaojinlei.music.Manager.CoverManage;
 import com.zzu.gaojinlei.music.Manager.EffectManage;
@@ -241,11 +242,10 @@ public class MainActivity extends AppCompatActivity {
         initlrc(getResources().getString(musicsData.peek().getLrc()).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().getLrc()));
         coverManage.setImage(musicsData.peek().getCoverImage());
 
-
-
     }
 
     private LrcView initlrc(String lrcSources){
+        NotifyManager.sendMessage(this,musicsData.peek());
         lrcView=findViewById(R.id.lv);
         lrcView.setLrcString(lrcSources);
         lrcView.changeCurrent(0L);
@@ -265,6 +265,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startOrpause(View view) {
+        //刷新当前通知栏
+        NotifyManager.sendMessage(this,musicsData.peek());
         if (!mediaPlayer.isPlaying()) {
             if (ispause){
                 mediaPlayer.start();

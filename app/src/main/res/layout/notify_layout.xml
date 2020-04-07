@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020. 高金磊编写
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/juhao"
+        android:contentDescription="TODO" />
+
+    <TextView
+        android:id="@+id/not_songname"
+        android:textSize="21dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="111dp"
+        android:layout_marginTop="10dp"
+        android:text="歌曲名" />
+
+    <TextView
+        android:id="@+id/not_singer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="53dp"
+        android:text="歌手"
+        android:textSize="20dp" />
+
+    <ImageView
+        android:id="@+id/not_pre"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="13dp"
+        android:layout_toEndOf="@+id/not_songname"
+        android:background="@drawable/shangyishou" />
+
+    <ImageView
+        android:id="@+id/not_bofang"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="13dp"
+        android:layout_toEndOf="@+id/not_pre"
+        android:background="@drawable/bofang" />
+
+    <ImageView
+        android:id="@+id/not_next"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="13dp"
+        android:layout_toEndOf="@+id/not_bofang"
+        android:background="@drawable/xiayishou" />
+
+    <TextView
+        android:id="@+id/not_Lrc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="64dp"
+        android:layout_toEndOf="@+id/not_singer"
+        android:text="歌词暂时不支持" />
+
+</RelativeLayout>
