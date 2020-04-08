@@ -12,6 +12,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,26 +41,48 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  */
 public class NotifyManager{
 
+   static BoardCastManager boardCastManager=new BoardCastManager();
 
     public static boolean sendMessage(Context context, MusicData musicData){
+        //数据预处理
         if (musicData==null)
-            musicData=new MusicData(R.drawable.juhao,R.string.句号,R.drawable.juhao);
+            return false;
         //检查权限
         if (!isNotificationEnabled(context))
         {
-            AutoShowMessage.showQMUIMessage(context,AutoShowMessage.FAIL,"没有通知权限请,通知栏无法正常显示");
             return false;
         }
-        RemoteViews contentView=new RemoteViews(context.getPackageName(),R.layout.notify_layout);
-
+        RemoteViews contentView;
+        contentView=new RemoteViews(context.getPackageName(),R.layout.notify_layout);
         contentView.setTextViewText(R.id.not_songname,musicData.getName());
         contentView.setTextViewText(R.id.not_singer,musicData.getSinger());
-        contentView.setImageViewBitmap(R.id.imageView, BitmapFactory.decodeResource(context.getResources(),musicData.getCoverImage()));
+        try {
+            if (!MainActivity.ispause)
+                contentView.setImageViewBitmap(R.id.not_bofang,BitmapFactory.decodeResource(context.getResources(),R.drawable.tingzhi));
+            else
+                contentView.setImageViewBitmap(R.id.not_bofang,BitmapFactory.decodeResource(context.getResources(),R.drawable.bofang));
+        }catch (IllegalStateException e){
+            //偶尔由于指令重排协调不当
+        }
 
+
+         contentView.setImageViewBitmap(R.id.imageView, BitmapFactory.decodeResource(context.getResources(),musicData.getCoverImage()));
         Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity( context,0,intent,0);
-
+        PendingIntent pendingIntent;
         NotificationManager manager = (NotificationManager)context.getSystemService(NOTIFICATION_SERVICE);
+        Intent boardintent = new Intent(context,BoardCastManager.class);  //这里的action要一致。
+//        context.sendBroadcast(boardintent);  //如果是在fragment，那么getActivity().sendBroadcast(intent);
+        boardintent.setAction(BoardCastManager.PREVIOUS_MUSIC);
+        pendingIntent = PendingIntent.getBroadcast(context,0,boardintent,0);
+        contentView.setOnClickPendingIntent(R.id.not_pre,pendingIntent);
+        boardintent.setAction(BoardCastManager.START_MUSIC);
+        pendingIntent = PendingIntent.getBroadcast(context,0,boardintent,0);
+        contentView.setOnClickPendingIntent(R.id.not_bofang,pendingIntent);
+        boardintent.setAction(BoardCastManager.NEXT_MUSIC);
+        pendingIntent = PendingIntent.getBroadcast(context,0,boardintent,0);
+        contentView.setOnClickPendingIntent(R.id.not_next,pendingIntent);
+
+
 
         if(Build.VERSION.SDK_INT >= 26)
         {
@@ -76,7 +99,6 @@ public class NotifyManager{
                              .setAutoCancel(true)
                              .setOngoing(false)
                              .setCustomContentView(contentView)                       //完全自定义,不调用.setStyle()
-                             .setContent(contentView)                                 //兼容4.1及以下
                              .setOnlyAlertOnce(true)
                             .setSmallIcon(R.drawable.bofang)
                              .build();
@@ -86,8 +108,9 @@ public class NotifyManager{
         {
             //当sdk版本小于26
             Notification notification = new NotificationCompat.Builder(context)
-                    .setContentTitle("无法正常显示通知")
-                    .setContentText("系统版本太低,请联系开发者")
+//                    .setContentTitle("无法正常显示通知")
+//                    .setContentText("系统版本太低,请联系开发者")
+                    .setContent(contentView)                                 //兼容4.1及以下
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .build();
