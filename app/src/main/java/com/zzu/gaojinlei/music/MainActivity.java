@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -17,6 +18,7 @@ import android.widget.PopupWindow;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.gplibs.magicsurfaceview.MagicSurfaceView;
 import com.qmuiteam.qmui.alpha.QMUIAlphaTextView;
 import com.qmuiteam.qmui.layout.QMUILinearLayout;
 import com.qmuiteam.qmui.util.QMUIDisplayHelper;
@@ -32,6 +34,9 @@ import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 import com.zzu.gaojinlei.music.Data.MusicData;
+import com.zzu.gaojinlei.music.Launcher.LaunchActivity;
+import com.zzu.gaojinlei.music.Manager.MultiScrapAnim;
+import com.zzu.gaojinlei.music.Notify.BoardCastManager;
 import com.zzu.gaojinlei.music.Notify.NotifyManager;
 import com.zzu.gaojinlei.music.Tools.AutoShowMessage;
 import com.zzu.gaojinlei.music.Manager.CoverManage;
@@ -45,6 +50,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
+   public static MainActivity mainActivity;//太懒了...直接开放AC虽然不安全能少些很多消息通讯
     LrcView lrcView;
     Handler handler=new Handler();
     private static String[] PERMISSIONS_STORAGE = {
@@ -57,11 +63,11 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.RECORD_AUDIO
     };
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-   static MediaPlayer mediaPlayer;
+   public static MediaPlayer mediaPlayer;
    public static MyVisualizerView myVisualizerView;
     CoverManage coverManage;//封面管理器
    static private LinkedList<MusicData> musicsData=new LinkedList<>();
-    boolean ispause=false;
+   public volatile static boolean ispause=false;//java指令重排有的时候真的让人头疼..................
     Thread lrcContal;
     IndicatorSeekBar timeSeekBar;
     //保证进度条滑动调节更流畅
@@ -76,11 +82,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startActivity(new Intent(this, LaunchActivity.class));
+        mainActivity=this;
         //initPermission
         initPermission();
         //初始化数据
         musicsData.addLast(new MusicData(R.raw.shaonian,R.string.少年,R.drawable.shaonian,"少年","梦然"));
-        musicsData.add(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg,"盛夏","毛不易"));
+        musicsData.addLast(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg,"盛夏","毛不易"));
         musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
         //初始化音乐环境
         initializeTheEnvironment();
@@ -88,8 +96,28 @@ public class MainActivity extends AppCompatActivity {
         initMusicView();
         //侧边栏
         initDrawerLayout();
-
         myVisualizerView=findViewById(R.id.myVisualizer);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //动态注册广播
+        BoardCastManager.getInstance().startReceive(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!NotifyManager.isNotificationEnabled(this))
+        AutoShowMessage.showQMUIMessage(this,AutoShowMessage.FAIL,"没有通知权限请,通知栏无法正常显示");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //注销广播
+        BoardCastManager.getInstance().destoryReceive(this);
     }
 
     private void initPermission() {
@@ -228,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         initlCoverManage();
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mediaPlayer.setDataSource(getResources().openRawResourceFd((int) musicsData.peek().getSong()));
+                mediaPlayer.setDataSource(getResources().openRawResourceFd((int) musicsData.peekFirst().getSong()));
             }
         } catch (IOException e) {
            AutoShowMessage.showQMUIMessage(this,"手机版本过低无法播放",AutoShowMessage.FAIL);
@@ -236,16 +264,16 @@ public class MainActivity extends AppCompatActivity {
 
         mediaPlayer.setOnPreparedListener(new PreparedListener());
         mediaPlayer.setOnCompletionListener(new CompletionListener());
-        ((QMUIAlphaTextView)findViewById(R.id.songname)).setText(musicsData.peek().getName());
-        ((QMUIAlphaTextView)findViewById(R.id.player)).setText((musicsData.peek().getSinger()));
+        ((QMUIAlphaTextView)findViewById(R.id.songname)).setText(musicsData.peekFirst().getName());
+        ((QMUIAlphaTextView)findViewById(R.id.player)).setText((musicsData.peekFirst().getSinger()));
 //初始化歌词控件
-        initlrc(getResources().getString(musicsData.peek().getLrc()).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peek().getLrc()));
-        coverManage.setImage(musicsData.peek().getCoverImage());
+        initlrc(getResources().getString(musicsData.peekFirst().getLrc()).equals("")?"暂时没有找到歌词":getResources().getString(musicsData.peekFirst().getLrc()));
+        coverManage.setImage(musicsData.peekFirst().getCoverImage());
 
     }
 
     private LrcView initlrc(String lrcSources){
-        NotifyManager.sendMessage(this,musicsData.peek());
+        NotifyManager.sendMessage(this,musicsData.peekFirst());
         lrcView=findViewById(R.id.lv);
         lrcView.setLrcString(lrcSources);
         lrcView.changeCurrent(0L);
@@ -263,10 +291,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return lrcView;
     }
-
+    //集中管理区只要音乐变动必须通过该区---耦合度太高...........
     public void startOrpause(View view) {
-        //刷新当前通知栏
-        NotifyManager.sendMessage(this,musicsData.peek());
         if (!mediaPlayer.isPlaying()) {
             if (ispause){
                 mediaPlayer.start();
@@ -290,6 +316,8 @@ public class MainActivity extends AppCompatActivity {
             ((QMUIRadiusImageView) findViewById(R.id.control)).setBackgroundResource(R.drawable.bofang_green);
             ((QMUIRadiusImageView) findViewById(R.id.control)).setColorFilter(Color.GREEN);
         }
+        //刷新当前通知栏
+        NotifyManager.sendMessage(this,musicsData.peekFirst());
 
     }
 
@@ -356,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         fullLrcview.setmTextSize(60);
         fullLrcview.setmDividerHeight(20f);
         onshow=true;
-        fullLrcview.setLrcString(getResources().getString(musicsData.peek().getLrc()));
+        fullLrcview.setLrcString(getResources().getString(musicsData.peekFirst().getLrc()));
 //        Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.drawable.fullscreenbg);
 //        fullLrcview.setBackground(bitmap);
         //此处等待资源加载完毕,不让将处于卡顿状态
@@ -462,11 +490,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showImageAni(View view) {
+        if (mediaPlayer==null||!mediaPlayer.isPlaying())
+        MultiScrapAnim.show(view, (MagicSurfaceView) MainActivity.mainActivity.findViewById(R.id.Magicsufferview));
+        else
+        AutoShowMessage.showQMUIMessage(this,AutoShowMessage.NOTHING,"请先停止播放才能见到特效",200);
+    }
+
+
     private class CompletionListener implements MediaPlayer.OnCompletionListener{
 
         @Override
         public void onCompletion(MediaPlayer mp) {
             mediaPlayer.release();
+            NotifyManager.sendMessage(MainActivity.mainActivity,musicsData.peekFirst());
             nextMusic(null);
         }
     }
@@ -480,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.start();
             //绑定音频到音效控制器
             EffectManage.getInstance().update();
+            NotifyManager.sendMessage(MainActivity.mainActivity,musicsData.peekFirst());
         }
     }
 

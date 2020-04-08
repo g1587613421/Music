@@ -20,6 +20,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Launcher.LaunchActivity">
+            <intent-filter>
+                <action android:name="launch"/>
+            </intent-filter>
+        </activity>
+        <receiver android:name=".Notify.BoardCastManager">
+            <intent-filter>
+                <action android:name="com.zzu.gaojinlei.music.boardCast"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

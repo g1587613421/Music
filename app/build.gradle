@@ -20,6 +20,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.gplibs:magic-surface-view:1.1.1'
     implementation 'com.qmuiteam:qmui:2.0.0-alpha04'
     implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
     implementation fileTree(dir: 'libs', include: ['*.jar'])

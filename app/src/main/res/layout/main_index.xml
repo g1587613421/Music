@@ -21,22 +21,38 @@
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="-47dp"
         tools:layout_editor_absoluteY="0dp">
-
-        <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-            android:id="@+id/QMUIRadiusImageView5"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            app:qmui_border_width="5dp"
-            app:qmui_border_color="@color/qmui_config_color_black"
-            app:qmui_selected_border_width="10dp"
+        <FrameLayout
+            android:id="@+id/sufferview"
+            android:layout_width="wrap_content"
             android:layout_marginStart="180dp"
             android:layout_marginTop="52dp"
-            android:layout_marginEnd="181dp"
-            android:src="@drawable/music_default_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:qmui_corner_radius="100dp" />
+            android:layout_marginEnd="181dp"
+            android:layout_height="wrap_content">
+            <com.gplibs.magicsurfaceview.MagicSurfaceView
+                android:id="@+id/Magicsufferview"
+                android:layout_width="200dp"
+                android:layout_height="200dp">
+            </com.gplibs.magicsurfaceview.MagicSurfaceView>
+
+            <com.qmuiteam.qmui.widget.QMUIRadiusImageView
+                android:onClick="showImageAni"
+                android:id="@+id/QMUIRadiusImageView5"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/music_default_bg"
+                app:qmui_border_color="@color/qmui_config_color_black"
+                app:qmui_border_width="5dp"
+                app:qmui_corner_radius="100dp"
+                app:qmui_selected_border_width="10dp" />
+
+        </FrameLayout>
+
+
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -175,7 +191,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/QMUIRadiusImageView5"
+            app:layout_constraintTop_toBottomOf="@+id/sufferview"
             lrc:currentTextColor="#46BD4B"
             lrc:normalTextColor="#5F5E5E" />
 
@@ -189,10 +205,10 @@
             android:text="未知"
             android:textColor="@color/qmui_btn_blue_text"
             android:textSize="30sp"
-            app:layout_constraintEnd_toStartOf="@+id/QMUIRadiusImageView5"
+            app:layout_constraintEnd_toStartOf="@+id/sufferview"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/QMUIRadiusImageView5" />
+            app:layout_constraintTop_toTopOf="@+id/sufferview" />
 
         <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
             android:id="@+id/player"

@@ -24,6 +24,7 @@ public class CoverManage implements com.zzu.gaojinlei.music.ManagerInteface.Cove
 //  static Thread thread;
   Context context;
     Animation mAnimation;
+   final static Object lock=new Object();
   long ra=0;
     //实现单例模式防止数据紊乱
     private CoverManage(){
@@ -58,31 +59,40 @@ public class CoverManage implements com.zzu.gaojinlei.music.ManagerInteface.Cove
 
     @Override
     public  CoverManage setCover(QMUIRadiusImageView cover, Context context) {//保留建造者模式
-        this.context=context;
-        CoverManage.cover = cover;
-        return coverManage;
+        synchronized (lock) {
+            this.context = context;
+            CoverManage.cover = cover;
+            return coverManage;
+        }
     }
     @Override
     public CoverManage setImage(int image){
-        cover.setImageResource(image);
-        return coverManage;
+        synchronized (lock) {
+            cover.setImageResource(image);
+            return coverManage;
+        }
     }
     @Override
     public  QMUIRadiusImageView getCover() {
         return cover;
     }
 @Override
-public synchronized void start(){//未处理重复调用--但是无论如何重复效果还是相同的,这里不再处理
-    LinearInterpolator lir = new LinearInterpolator();
-    mAnimation = AnimationUtils.loadAnimation(context, R.anim.coveranim);
-    mAnimation.setInterpolator(lir);
-    cover.startAnimation(mAnimation);
+public  void start(){//未处理重复调用--但是无论如何重复效果还是相同的,这里不再处理
+        synchronized (lock) {
+                    LinearInterpolator lir = new LinearInterpolator();
+                    mAnimation = AnimationUtils.loadAnimation(context, R.anim.coveranim);
+                    mAnimation.setInterpolator(lir);
+                  cover.startAnimation(mAnimation);
+        }
 //    thread.start();
+
 }
     @Override
-    public synchronized void pause(){
+    public  void pause(){
+        synchronized (lock) {
 //        thread.interrupt();
 //        cover.setAnimation(null);
-        cover.clearAnimation();
+            cover.clearAnimation();
+        }
     }
 }

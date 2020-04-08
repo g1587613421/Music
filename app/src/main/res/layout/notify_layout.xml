@@ -5,18 +5,20 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="@drawable/juhao"
         android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/not_songname"
         android:textSize="21dp"
+        android:textColor="@color/qmui_btn_blue_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -27,6 +29,7 @@
 
     <TextView
         android:id="@+id/not_singer"
+        android:textColor="@color/qmui_btn_blue_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -38,36 +41,38 @@
 
     <ImageView
         android:id="@+id/not_pre"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="13dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/not_songname"
         android:background="@drawable/shangyishou" />
 
     <ImageView
         android:id="@+id/not_bofang"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="19dp"
         android:layout_toEndOf="@+id/not_pre"
         android:background="@drawable/bofang" />
 
     <ImageView
         android:id="@+id/not_next"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/not_bofang"
         android:background="@drawable/xiayishou" />
 
     <TextView
         android:id="@+id/not_Lrc"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
