@@ -211,6 +211,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSeeking(SeekParams seekParams) {
                 onSeekBar=true;
+                ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.VISIBLE);
+                try {
+                    //精确查询歌词--有可能出现mediaplay异常
+                ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText(lrcView.getCurrentLrcExact((long) (seekParams.progressFloat*mediaPlayer.getDuration()/100)-1000));
+            }  catch (Exception e){
+                    //辅助歌词查询--精确度差
+                    ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText(lrcView.getCurrentLrc(seekParams.progressFloat/100-0.01f));
+                }
             }
 
             @Override
@@ -220,9 +228,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
-
+                ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.INVISIBLE);
                 //减少出现修改失败的概率
-                float middle=timeSeekBar.getProgressFloat();
+                float middle=timeSeekBar.getProgressFloat()/100;
                 onSeekBar=false;
                 if (mediaPlayer.isPlaying()){
                     mediaPlayer.seekTo((int)(middle*mediaPlayer.getDuration()));
@@ -318,6 +326,8 @@ public class MainActivity extends AppCompatActivity {
         }
         //刷新当前通知栏
         NotifyManager.sendMessage(this,musicsData.peekFirst());
+        //初始化选择辅助器
+        ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.INVISIBLE);
 
     }
 
@@ -329,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
         timeSeekBar.setProgress(0);
         initializeTheEnvironment();
         startOrpause(null);
+
     }
 
     public void lastMusic(View view) {
@@ -552,7 +563,7 @@ class LrcControl extends Thread{
                 while (true){
                     try {
                         if (!onSeekBar) {
-                            timeSeekBar.setProgress((float) ( mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01)));
+                            timeSeekBar.setProgress((int) (100*(mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01))));
                         }
                         if (mediaPlayer.isPlaying()&&onshow) {
                             fullLrcview.changeCurrent(mediaPlayer.getCurrentPosition());

@@ -39,7 +39,6 @@ public class LrcView extends View implements LrcViewInteface {
 	private int mLrcHeight; // lrc界面的高度
 	private int mRows=5;      // 多少行
 
-	private boolean proofread=false;
 	private int mCurrentLine = 1; // 当前行
 
 	private float mTextSize=50.0f; // 字体
@@ -149,6 +148,43 @@ public class LrcView extends View implements LrcViewInteface {
 
 		canvas.restore();
 	}
+	public String getCurrentLrc(float process){//0---1
+// 每次进来都遍历存放的时间
+        if (mTimes.size()==0)
+            return "暂时没有歌词";
+        long time= (long) (process*mTimes.get(mTimes.size()-1));
+		 int target=0;
+		for (int i = 0; i < mTimes.size(); i++) {
+
+			// 发现这个时间大于传进来的时间
+			// 那么现在就应该显示这个时间前面的对应的那一行
+			// 每次都重新显示，是不是要判断：现在正在显示就不刷新了
+			if (mTimes.get(i) > time) {
+				target = i <= 1 ? 0 : i - 1;
+				break;
+			}
+
+		}
+		return mLrcs.get(target);
+	}
+    public String getCurrentLrcExact(long time){//0---1
+// 每次进来都遍历存放的时间
+        if (mTimes.size()==0)
+            return "暂时没有歌词";
+        int target=0;
+        for (int i = 0; i < mTimes.size(); i++) {
+
+            // 发现这个时间大于传进来的时间
+            // 那么现在就应该显示这个时间前面的对应的那一行
+            // 每次都重新显示，是不是要判断：现在正在显示就不刷新了
+            if (mTimes.get(i) > time) {
+                target = i <= 1 ? 0 : i - 1;
+                break;
+            }
+
+        }
+        return mLrcs.get(target);
+    }
 	// 外部提供方法
 	// 解析时间
 	private Long parseTime(String time) {

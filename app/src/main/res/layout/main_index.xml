@@ -51,36 +51,45 @@
         </FrameLayout>
 
 
-
-
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="140dp"
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent">
+
+            <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+                android:id="@+id/shownowLrc"
+                android:layout_width="wrap_content"
+                android:alpha="0.5"
+                android:textColor="@color/qmui_btn_blue_text"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.warkiz.widget.IndicatorSeekBar
                 android:id="@+id/timeSeek"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="28dp"
                 android:layout_marginEnd="24dp"
-                app:isb_thumb_color="#03A9F4"
                 app:isb_indicator_text_color="#03A9F4"
-                app:isb_tick_texts_color="#03A9F4"
-                app:isb_thumb_text_color="#03A9F4"
-                app:isb_track_progress_color="#03A9F4"
-                app:isb_max="1"
+                app:isb_max="100"
                 app:isb_min="0"
+                app:isb_progress_value_float="false"
                 app:isb_show_indicator="none"
-                app:isb_show_thumb_text="false"
+                app:isb_show_thumb_text="true"
+                app:isb_thumb_color="#03A9F4"
+                app:isb_thumb_text_color="#03A9F4"
+                app:isb_tick_texts_color="#03A9F4"
+                app:isb_track_progress_color="#03A9F4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.526"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -102,8 +111,8 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="lastMusic"
                 android:background="@drawable/shangyishou"
+                android:onClick="lastMusic"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView"
                 app:qmui_corner_radius="25dp" />
@@ -114,8 +123,8 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="startOrpause"
                 android:background="@drawable/bofang"
+                android:onClick="startOrpause"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/QMUIRadiusnot_pre"
                 app:qmui_corner_radius="25dp" />
@@ -126,9 +135,9 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="8dp"
-                android:onClick="nextMusic"
-
                 android:background="@drawable/xiayishou"
+
+                android:onClick="nextMusic"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/control"
                 app:qmui_corner_radius="25dp" />
@@ -154,17 +163,17 @@
             android:text="歌词"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toStartOf="@+id/QMUIRoundButton"
-            app:layout_constraintHorizontal_bias="0.62"
+            app:layout_constraintHorizontal_bias="0.525"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/QMUIRoundButton"
+            app:layout_constraintVertical_bias="0.0"
             app:qmui_isRadiusAdjustBounds="true" />
 
         <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
             android:id="@+id/QMUIRoundButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="240dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="116dp"
             android:onClick="changeEffect"
             android:padding="5dp"
             android:text="音效on"
