@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,6 +29,11 @@
                 <action android:name="launch"/>
             </intent-filter>
         </activity>
+        <service android:name=".windows_float.WindowsFloat">
+            <intent-filter>
+                <action android:name="MyService"/>
+            </intent-filter>
+        </service>
         <receiver android:name=".Notify.BoardCastManager">
             <intent-filter>
                 <action android:name="com.zzu.gaojinlei.music.boardCast"/>

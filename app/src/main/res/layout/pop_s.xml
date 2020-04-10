@@ -1,37 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:theme="@style/QMUI.Dialog"
-    android:padding="25dp"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="25dp"
+    android:theme="@style/QMUI.Dialog">
 
     <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
         android:id="@+id/showfullsceen"
-        android:onClick="toshowfullsceen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="toshowfullsceen"
         android:text="全屏歌词"
         android:textSize="15dp"
-        android:layout_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:qmui_isRadiusAdjustBounds="true" />
 
-    <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:alpha="0.8"
+            android:text="悬浮歌词"
+            android:textColor="@color/qmui_btn_blue_text" />
+
+        <Switch
+            android:id="@+id/switchFloatWindow"
+            android:layout_width="wrap_content"
+            android:onClick="changeWindowsLrc"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:saveEnabled="true"
+            android:showText="true"
+            android:textColor="@color/qmui_btn_blue_text" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:alpha="0.8"
-        android:text="彩色歌词"
-        android:textColor="@color/qmui_btn_blue_text" />
-    <Switch
-        android:onClick="changeColor"
-        android:id="@+id/changeColor"
-        android:showText="true"
         android:layout_weight="1"
-        android:textColor="@color/qmui_btn_blue_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:orientation="horizontal">
+
+        <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.8"
+            android:text="彩色歌词"
+            android:textColor="@color/qmui_btn_blue_text" />
+
+        <Switch
+            android:id="@+id/changeColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="changeColor"
+            android:showText="true"
+            android:textColor="@color/qmui_btn_blue_text" />
+    </LinearLayout>
+
 </LinearLayout>

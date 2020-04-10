@@ -81,7 +81,7 @@
                 app:isb_indicator_text_color="#03A9F4"
                 app:isb_max="100"
                 app:isb_min="0"
-                app:isb_progress_value_float="false"
+                app:isb_progress_value_float="true"
                 app:isb_show_indicator="none"
                 app:isb_show_thumb_text="true"
                 app:isb_thumb_color="#03A9F4"

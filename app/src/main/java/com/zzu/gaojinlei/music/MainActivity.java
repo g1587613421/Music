@@ -1,6 +1,7 @@
 package com.zzu.gaojinlei.music;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -13,7 +14,9 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -35,7 +38,9 @@ import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 import com.zzu.gaojinlei.music.Data.MusicData;
 import com.zzu.gaojinlei.music.Launcher.LaunchActivity;
+import com.zzu.gaojinlei.music.Manager.LocalDataManage;
 import com.zzu.gaojinlei.music.Manager.MultiScrapAnim;
+import com.zzu.gaojinlei.music.Manager.ViewInitManager;
 import com.zzu.gaojinlei.music.Notify.BoardCastManager;
 import com.zzu.gaojinlei.music.Notify.NotifyManager;
 import com.zzu.gaojinlei.music.Tools.AutoShowMessage;
@@ -45,6 +50,7 @@ import com.zzu.gaojinlei.music.Manager.SongListManager;
 import com.zzu.gaojinlei.music.Manager.VisualizerManage;
 import com.zzu.gaojinlei.music.View.LrcView;
 import com.zzu.gaojinlei.music.View.MyVisualizerView;
+import com.zzu.gaojinlei.music.windows_float.WindowsFloat;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -90,6 +96,8 @@ public class MainActivity extends AppCompatActivity {
         musicsData.addLast(new MusicData(R.raw.shaonian,R.string.少年,R.drawable.shaonian,"少年","梦然"));
         musicsData.addLast(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg,"盛夏","毛不易"));
         musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
+        //初始化功能组件
+        AutoShowMessage.getInstance(this);
         //初始化音乐环境
         initializeTheEnvironment();
         //初始化控件
@@ -97,6 +105,9 @@ public class MainActivity extends AppCompatActivity {
         //侧边栏
         initDrawerLayout();
         myVisualizerView=findViewById(R.id.myVisualizer);
+        //悬浮窗
+        if (LocalDataManage.getInstance(this).getdata("switchFloatWindow",true))
+            startService(new Intent(this,WindowsFloat.class));
     }
 
     @Override
@@ -111,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (!NotifyManager.isNotificationEnabled(this))
         AutoShowMessage.showQMUIMessage(this,AutoShowMessage.FAIL,"没有通知权限请,通知栏无法正常显示");
+        ViewInitManager.initView(this);
     }
 
     @Override
@@ -210,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
         timeSeekBar.setOnSeekChangeListener(new OnSeekChangeListener() {
             @Override
             public void onSeeking(SeekParams seekParams) {
-                onSeekBar=true;
                 ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.VISIBLE);
                 try {
                     //精确查询歌词--有可能出现mediaplay异常
@@ -223,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(IndicatorSeekBar seekBar) {
-
+                onSeekBar=true;
             }
 
             @Override
@@ -301,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
     }
     //集中管理区只要音乐变动必须通过该区---耦合度太高...........
     public void startOrpause(View view) {
+        WindowsFloat.refresh(getResources().getString(R.string.app_name));
         if (!mediaPlayer.isPlaying()) {
             if (ispause){
                 mediaPlayer.start();
@@ -352,18 +364,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void showFullSceenLrc(final View view)
     {
-       final QMUIPopup qmuiPopup= QMUIPopups.popup(this, QMUIDisplayHelper.dp2px(this, 250))
+       final QMUIPopup qmuiPopup= QMUIPopups.popup(this)
                 .preferredDirection(QMUIPopup.DIRECTION_TOP)
                 .view(R.layout.pop_s)
-                .edgeProtection(QMUIDisplayHelper.dp2px(this, 20))
-                .offsetX(QMUIDisplayHelper.dp2px(this, 20))
-                .offsetYIfBottom(QMUIDisplayHelper.dp2px(this, 5))
+                .edgeProtection(QMUIDisplayHelper.dp2px(this, 25))
+                .offsetX(QMUIDisplayHelper.dp2px(this, 10))
+                .offsetYIfBottom(QMUIDisplayHelper.dp2px(this, 10))
                 .shadow(true)
                 .arrow(true)
                 .animStyle(QMUIPopup.ANIM_GROW_FROM_CENTER)
                 .show(view);
         ((Switch)(qmuiPopup.getDecorView().findViewById(R.id.changeColor))).setChecked(colorRan);
-
+        ((Switch) qmuiPopup.getDecorView().findViewById(R.id.switchFloatWindow)).setChecked(LocalDataManage.getInstance(this).getdata("switchFloatWindow",true));
        //自动关闭
 //        new Thread(){
 //            @Override
@@ -500,7 +512,21 @@ public class MainActivity extends AppCompatActivity {
             lrcView.randomColor=false;
         }
     }
+    public void changeWindowsLrc(View view) {
+        if (((Switch)view).isChecked())
+        {
+            LocalDataManage.getInstance(this).store("switchFloatWindow",true);
+            WindowsFloat.showCheck(this);
+            startService(new Intent(this,WindowsFloat.class));
+        }
+        else
+        {
+            LocalDataManage.getInstance(this).store("switchFloatWindow",false);
 
+            WindowsFloat.close(this);
+            stopService(new Intent(this,WindowsFloat.class));
+        }
+    }
     public void showImageAni(View view) {
         if (mediaPlayer==null||!mediaPlayer.isPlaying())
         MultiScrapAnim.show(view, (MagicSurfaceView) MainActivity.mainActivity.findViewById(R.id.Magicsufferview));
@@ -553,7 +579,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-class LrcControl extends Thread{
+    @Override
+    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    class LrcControl extends Thread{
     @Override
     public void run() {
         //不影响歌词的情况下尽可能减少SeekBar的调节冲突
@@ -563,13 +599,14 @@ class LrcControl extends Thread{
                 while (true){
                     try {
                         if (!onSeekBar) {
-                            timeSeekBar.setProgress((int) (100*(mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01))));
+                            timeSeekBar.setProgress((float) (100f*(mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01))));
                         }
                         if (mediaPlayer.isPlaying()&&onshow) {
                             fullLrcview.changeCurrent(mediaPlayer.getCurrentPosition());
+                            WindowsFloat.refresh(fullLrcview.getLrcLine());
                             fullLrcview.randomColor=colorRan;
                         }
-                        sleep(500);
+                        sleep(800);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -584,6 +621,7 @@ class LrcControl extends Thread{
                 //在歌曲切换的时候有极低概率恰好mediaPlayer尚未初始化!!!!!
                 if (mediaPlayer.isPlaying()){
                     lrcView.changeCurrent(mediaPlayer.getCurrentPosition());
+                    WindowsFloat.refresh(fullLrcview.getLrcLine());
                 }
                 Thread.sleep(300);
             } catch (Exception e) {
@@ -591,6 +629,5 @@ class LrcControl extends Thread{
         }
     }
 }
-
 
 }

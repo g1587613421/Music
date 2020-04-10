@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020. 高金磊编写
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:background="#9FA09898"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+<TextView
+    android:id="@+id/wfLrc"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:textColor="@color/qmui_btn_blue_text"
+    android:textSize="20dp"
+    android:layout_height="wrap_content"
+    android:text="@string/app_name"/>
+</LinearLayout>

@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Switch;
 
 import com.gplibs.magicsurfaceview.MagicScene;
 import com.gplibs.magicsurfaceview.MagicSceneBuilder;
@@ -19,6 +21,7 @@ import com.gplibs.magicsurfaceview.MagicUpdaterListener;
 import com.gplibs.magicsurfaceview.PointLight;
 import com.zzu.gaojinlei.music.MainActivity;
 import com.zzu.gaojinlei.music.R;
+import com.zzu.gaojinlei.music.windows_float.WindowsFloat;
 
 /**
  * 环境光: 开始黑色                                                  STEP3~1 由黑变白色
@@ -173,4 +176,6 @@ public class LaunchActivity extends MagicActivity {
                 .build();
         getPageSurfaceView().render(scene);
     }
+
+
 }

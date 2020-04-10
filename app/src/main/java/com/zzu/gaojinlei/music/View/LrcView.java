@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 
 @SuppressLint("DrawAllocation")
 public class LrcView extends View implements LrcViewInteface {
-	private List<String> mLrcs = new ArrayList<String>(); // 存放歌词
+	private static List<String> mLrcs = new ArrayList<String>(); // 存放歌词
 	private List<Long> mTimes = new ArrayList<Long>(); // 存放时间
 
 	public int colors[]=new int[]{Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,0xFF03A9F4,Color.YELLOW};
@@ -39,7 +39,7 @@ public class LrcView extends View implements LrcViewInteface {
 	private int mLrcHeight; // lrc界面的高度
 	private int mRows=5;      // 多少行
 
-	private int mCurrentLine = 1; // 当前行
+	private static int mCurrentLine = 1; // 当前行
 
 	private float mTextSize=50.0f; // 字体
 	private float mDividerHeight=15.0f; // 行间距
@@ -108,6 +108,8 @@ public class LrcView extends View implements LrcViewInteface {
 		setMeasuredDimension(widthMeasureSpec, measuredHeight);
 	}
 
+
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -147,6 +149,10 @@ public class LrcView extends View implements LrcViewInteface {
 		}
 
 		canvas.restore();
+	}
+	//当前播放内容查询
+	public  String getLrcLine(){
+		return mLrcs.get(mCurrentLine);
 	}
 	public String getCurrentLrc(float process){//0---1
 // 每次进来都遍历存放的时间
