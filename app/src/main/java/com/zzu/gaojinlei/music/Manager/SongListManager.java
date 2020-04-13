@@ -25,6 +25,7 @@ public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.
     private static SongListManager songListManager;
     private QMUIGroupListView mGroupListView;
     private Context context;
+    QMUIGroupListView.Section section;
     //单例模式---保证数据不紊乱--仅为MainActivity使用
     public static SongListManager getInstance(Context context,QMUIGroupListView mGroupListView) {
         if (songListManager==null){
@@ -48,8 +49,12 @@ public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.
     }
    @Override
    public void initList(final LinkedList<MusicData> linkedList, boolean isplaying){
-        mGroupListView.removeAllViews();
-       QMUIGroupListView.Section section=QMUIGroupListView.newSection(context)
+//        mGroupListView.removeAllViewsInLayout();
+//       mGroupListView.resetPivot();
+       if (mGroupListView.getSectionCount()!=0){
+           section.removeFrom(mGroupListView);
+       }
+       section = QMUIGroupListView.newSection(context)
                .setTitle("音乐列表");
        int count=0;
        for (MusicData musicData : linkedList) {
@@ -78,8 +83,8 @@ public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.
            itemWithDetailBelow2.setDetailText("   ");//默认文字在左边   描述文字在标题下边
            section.addItemView(itemWithDetailBelow2, null);
        }
-       section.addTo(mGroupListView);
 
+       section.addTo(mGroupListView);
 
     }
 

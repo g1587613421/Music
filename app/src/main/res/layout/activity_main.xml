@@ -12,6 +12,7 @@
     <include layout="@layout/main_index"/>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
+        android:theme="@style/QMUI.Compat"
         android:layout_width="220dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"

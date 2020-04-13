@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     boolean isOpenDrawer=false;
+    DrawerLayout drawerLayout;
     private void initDrawerLayout() {
 
         //启动组件监听服务
@@ -177,7 +179,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
         SongListManager.getInstance(this, (QMUIGroupListView) findViewById(R.id.listView));
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);/*重点，获取主界面的布局，因为没有这句话我才报错*/
+      /*重点，获取主界面的布局，因为没有这句话我才报错*/
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
         drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
 
@@ -533,6 +536,12 @@ public class MainActivity extends AppCompatActivity {
         else
         AutoShowMessage.showQMUIMessage(this,AutoShowMessage.NOTHING,"请先停止播放才能见到特效",200);
     }
+
+    public void showMusicList(View view) {
+//        SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
+        drawerLayout.openDrawer(Gravity.LEFT);
+    }
+
 
 
     private class CompletionListener implements MediaPlayer.OnCompletionListener{

@@ -64,9 +64,9 @@
             <com.qmuiteam.qmui.alpha.QMUIAlphaTextView
                 android:id="@+id/shownowLrc"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:alpha="0.5"
                 android:textColor="@color/qmui_btn_blue_text"
-                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -93,65 +93,71 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                android:id="@+id/QMUIRadiusImageView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="9dp"
                 android:layout_marginBottom="8dp"
-
-                android:background="@drawable/suiji"
+                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:qmui_corner_radius="20dp" />
+                app:layout_constraintTop_toBottomOf="@+id/timeSeek">
 
-            <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                android:id="@+id/QMUIRadiusnot_pre"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/shangyishou"
-                android:onClick="lastMusic"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView"
-                app:qmui_corner_radius="25dp" />
+                <com.qmuiteam.qmui.widget.QMUIRadiusImageView
+                    android:id="@+id/QMUIRadiusImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="8dp"
 
-            <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                android:id="@+id/control"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/bofang"
-                android:onClick="startOrpause"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/QMUIRadiusnot_pre"
-                app:qmui_corner_radius="25dp" />
+                    android:background="@drawable/suiji"
+                    app:qmui_corner_radius="20dp" />
 
-            <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                android:id="@+id/QMUIRadiusImageView4"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/xiayishou"
+                <com.qmuiteam.qmui.widget.QMUIRadiusImageView
+                    android:id="@+id/QMUIRadiusnot_pre"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/shangyishou"
+                    android:onClick="lastMusic"
+                    app:qmui_corner_radius="25dp" />
 
-                android:onClick="nextMusic"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/control"
-                app:qmui_corner_radius="25dp" />
+                <com.qmuiteam.qmui.widget.QMUIRadiusImageView
+                    android:id="@+id/control"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bofang"
+                    android:onClick="startOrpause"
+                    app:qmui_corner_radius="25dp" />
 
-            <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="8dp"
+                <com.qmuiteam.qmui.widget.QMUIRadiusImageView
+                    android:id="@+id/QMUIRadiusImageView4"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/xiayishou"
 
-                android:background="@drawable/xihuan"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/QMUIRadiusImageView4"
-                app:qmui_corner_radius="20dp" />
+                    android:onClick="nextMusic"
+                    app:qmui_corner_radius="25dp" />
+
+                <com.qmuiteam.qmui.widget.QMUIRadiusImageView
+                    android:onClick="showMusicList"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+
+                    android:background="@drawable/music_list_blue"
+                    app:qmui_corner_radius="20dp" />
+
+            </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
