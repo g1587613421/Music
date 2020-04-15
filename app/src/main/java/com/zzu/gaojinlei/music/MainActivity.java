@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -59,7 +60,7 @@ import java.util.LinkedList;
 public class MainActivity extends AppCompatActivity {
    public static MainActivity mainActivity;//太懒了...直接开放AC虽然不安全能少些很多消息通讯
     LrcView lrcView;
-    Handler handler=new Handler();
+   public Handler handler=new Handler();
     private static String[] PERMISSIONS_STORAGE = {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE"
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
    public volatile static boolean ispause=false;//java指令重排有的时候真的让人头疼..................
     Thread lrcContal;
     IndicatorSeekBar timeSeekBar;
-    //保证进度条滑动调节更流畅
+    //保证进度条滑动调节更流畅--效果帅呆了
     boolean onSeekBar=false;
     QMUIFullScreenPopup lrcFullSceenPopup;
     LrcView fullLrcview;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         //初始化数据
         musicsData.addLast(new MusicData(R.raw.shaonian,R.string.少年,R.drawable.shaonian,"少年","梦然"));
         musicsData.addLast(new MusicData(R.raw.a11,R.string.盛夏,R.drawable.music_default_bg,"盛夏","毛不易"));
+        musicsData.addLast(new MusicData(R.raw.zhouma,R.string.走马,R.drawable.zhouma,"走马","陈粒"));
         musicsData.addLast(new MusicData(R.raw.juhao,R.string.句号,R.drawable.juhao,"句号","邓紫棋"));
         //初始化功能组件
         AutoShowMessage.getInstance(this);
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     initializeTheEnvironment();
-                                    startOrpause(null);
+//                                    startOrpause(null);
                                     if (SongListManager.getInstance()!=null)
                                         SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
                                 }
@@ -178,10 +180,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }.start();
-        SongListManager.getInstance(this, (QMUIGroupListView) findViewById(R.id.listView));
+
       /*重点，获取主界面的布局，因为没有这句话我才报错*/
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-
+        SongListManager.getInstance(this,(ScrollView) drawerLayout.findViewById(R.id.musicListViewLY)).initList(musicsData,false);
         drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
 
             @Override
@@ -191,8 +193,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
+//                SongListManager.getInstance().initList(musicsData,mediaPlayer.isPlaying());
                 isOpenDrawer=true;
+
             }
 
             @Override
@@ -224,14 +227,27 @@ public class MainActivity extends AppCompatActivity {
         timeSeekBar=findViewById(R.id.timeSeek);
         timeSeekBar.setOnSeekChangeListener(new OnSeekChangeListener() {
             @Override
-            public void onSeeking(SeekParams seekParams) {
-                ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.VISIBLE);
+            public void onSeeking(final SeekParams seekParams) {
+                if (onSeekBar)
+                    ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.VISIBLE);
+                else return;
                 try {
                     //精确查询歌词--有可能出现mediaplay异常
-                ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText(lrcView.getCurrentLrcExact((long) (seekParams.progressFloat*mediaPlayer.getDuration()/100)-1000));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText(lrcView.getCurrentLrcExact((long) (seekParams.progressFloat*mediaPlayer.getDuration()/100)-1000));
+
+                        }
+                    });
             }  catch (Exception e){
                     //辅助歌词查询--精确度差
-                    ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText(lrcView.getCurrentLrc(seekParams.progressFloat/100-0.01f));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText(lrcView.getCurrentLrc(seekParams.progressFloat/100-0.01f));
+                        }
+                    });
                 }
             }
 
@@ -243,6 +259,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
                 ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setVisibility(View.INVISIBLE);
+                ((QMUIAlphaTextView)findViewById(R.id.shownowLrc)).setText("");
+
                 //减少出现修改失败的概率
                 float middle=timeSeekBar.getProgressFloat()/100;
                 onSeekBar=false;
@@ -285,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mediaPlayer.setOnPreparedListener(new PreparedListener());
-        mediaPlayer.setOnCompletionListener(new CompletionListener());
+
         ((QMUIAlphaTextView)findViewById(R.id.songname)).setText(musicsData.peekFirst().getName());
         ((QMUIAlphaTextView)findViewById(R.id.player)).setText((musicsData.peekFirst().getSinger()));
 //初始化歌词控件
@@ -347,6 +365,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextMusic(View view) {
+        try {
+            mediaPlayer.pause();
+        } catch (IllegalStateException e) {
+           //初始化未完成
+        }
         mediaPlayer.release();
         if (lrcContal!=null&&!lrcContal.isInterrupted())
         lrcContal.interrupt();
@@ -358,6 +381,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void lastMusic(View view) {
+        try {
+            mediaPlayer.pause();
+        } catch (IllegalStateException e) {
+            //初始化未完成
+        }
         mediaPlayer.release();
         musicsData.addLast(musicsData.pollFirst());
         timeSeekBar.setProgress(0);
@@ -564,6 +592,7 @@ public class MainActivity extends AppCompatActivity {
             //绑定音频到音效控制器
             EffectManage.getInstance().update();
             NotifyManager.sendMessage(MainActivity.mainActivity,musicsData.peekFirst());
+            mp.setOnCompletionListener(new CompletionListener());
         }
     }
 
@@ -606,7 +635,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 while (true){
+
                     try {
+                        sleep(800);//提高兼容性---不可放到下面
                         if (!onSeekBar) {
                             timeSeekBar.setProgress((float) (100f*(mediaPlayer.getCurrentPosition() / (mediaPlayer.getDuration()+0.01))));
                         }
@@ -615,9 +646,9 @@ public class MainActivity extends AppCompatActivity {
                             WindowsFloat.refresh(fullLrcview.getLrcLine());
                             fullLrcview.randomColor=colorRan;
                         }
-                        sleep(800);
+
                     } catch (Exception e) {
-                        e.printStackTrace();
+
                     }
 
 

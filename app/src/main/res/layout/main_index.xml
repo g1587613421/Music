@@ -18,9 +18,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/minLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-47dp"
-        tools:layout_editor_absoluteY="0dp">
+        android:layout_height="match_parent">
         <FrameLayout
             android:id="@+id/sufferview"
             android:layout_width="wrap_content"
@@ -110,7 +108,7 @@
                     android:id="@+id/QMUIRadiusImageView"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
                     android:layout_marginBottom="8dp"
 
                     android:background="@drawable/suiji"
@@ -120,7 +118,7 @@
                     android:id="@+id/QMUIRadiusnot_pre"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/shangyishou"
                     android:onClick="lastMusic"
@@ -130,7 +128,7 @@
                     android:id="@+id/control"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/bofang"
                     android:onClick="startOrpause"
@@ -140,21 +138,20 @@
                     android:id="@+id/QMUIRadiusImageView4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="18dp"
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/xiayishou"
-
                     android:onClick="nextMusic"
                     app:qmui_corner_radius="25dp" />
 
                 <com.qmuiteam.qmui.widget.QMUIRadiusImageView
-                    android:onClick="showMusicList"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="20dp"
-
+                    android:layout_marginTop="10dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/music_list_blue"
-                    app:qmui_corner_radius="20dp" />
+                    android:onClick="showMusicList" />
 
             </LinearLayout>
 

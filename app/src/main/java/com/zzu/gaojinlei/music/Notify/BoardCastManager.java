@@ -56,9 +56,12 @@ public class BoardCastManager extends BroadcastReceiver {
         return true;
     }
 
-
+    long time=0;
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (time>System.currentTimeMillis()-500)//屏蔽广播
+            return;
+        time=System.currentTimeMillis();
         if (intent!=null)//耦合度太高---有时间再优化吧
         switch (intent.getAction()){
             case PREVIOUS_MUSIC:

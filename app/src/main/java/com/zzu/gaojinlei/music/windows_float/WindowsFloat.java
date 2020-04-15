@@ -139,13 +139,19 @@ static boolean isRuning;
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
     }
-    public static void refresh(String lrc){
+    public static void refresh(final String lrc){
         if (!isRuning)
             return;
-        if (mFloatLayout!=null){
-            ((TextView)mFloatLayout.findViewById(R.id.wfLrc)).setText(lrc);
-         touchListener.onTouch(null,null);
-        }
+
+            MainActivity.mainActivity.handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mFloatLayout!=null){
+                        ((TextView)mFloatLayout.findViewById(R.id.wfLrc)).setText(lrc);
+                        touchListener.onTouch(null,null);
+                }
+            }
+        });
 
     }
 
@@ -159,7 +165,11 @@ static boolean isRuning;
                 params.x = (int) event.getRawX();
                 params.y = (int) event.getRawY();
             }
-            manager.updateViewLayout(mFloatLayout, params);
+            try {
+                manager.updateViewLayout(mFloatLayout, params);//关闭悬浮窗后点击时间应该屏蔽掉
+            } catch (Exception e) {
+
+            }
 
             return false;  // 此处必须返回false，否则OnClickListener获取不到监听
         }

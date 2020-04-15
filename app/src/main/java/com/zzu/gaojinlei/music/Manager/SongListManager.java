@@ -6,10 +6,12 @@ package com.zzu.gaojinlei.music.Manager;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ScrollView;
 
 import com.qmuiteam.qmui.widget.grouplist.QMUICommonListItemView;
 import com.qmuiteam.qmui.widget.grouplist.QMUIGroupListView;
 import com.zzu.gaojinlei.music.Data.MusicData;
+import com.zzu.gaojinlei.music.MainActivity;
 import com.zzu.gaojinlei.music.R;
 
 import java.util.LinkedList;
@@ -24,12 +26,13 @@ public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.
     public static boolean change=false;
     private static SongListManager songListManager;
     private QMUIGroupListView mGroupListView;
+    private  ScrollView layout;
     private Context context;
     QMUIGroupListView.Section section;
     //单例模式---保证数据不紊乱--仅为MainActivity使用
-    public static SongListManager getInstance(Context context,QMUIGroupListView mGroupListView) {
+    public static SongListManager getInstance(Context context,ScrollView layout) {
         if (songListManager==null){
-           songListManager= new SongListManager(context,mGroupListView);
+           songListManager= new SongListManager(context,layout);
         }
         return  songListManager;
     }
@@ -43,22 +46,24 @@ public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.
             }
         return songListManager;
     }
-    private SongListManager(Context context,QMUIGroupListView mGroupListView){
-        this.mGroupListView=mGroupListView;
+    private SongListManager(Context context, ScrollView layout){
+        this.layout=layout;
         this.context=context;
     }
    @Override
-   public void initList(final LinkedList<MusicData> linkedList, boolean isplaying){
+   public synchronized void initList(final LinkedList<MusicData> linkedList, boolean isplaying){
 //        mGroupListView.removeAllViewsInLayout();
 //       mGroupListView.resetPivot();
-       if (mGroupListView.getSectionCount()!=0){
-           section.removeFrom(mGroupListView);
-       }
-       section = QMUIGroupListView.newSection(context)
+//       if (mGroupListView.getSectionCount()!=0){
+//           mGroupListView.getSection(0).removeFrom(mGroupListView);
+//       }
+       songListManager.layout.removeAllViews();
+       songListManager.mGroupListView=new QMUIGroupListView(MainActivity.mainActivity);
+       songListManager.section = QMUIGroupListView.newSection(context)
                .setTitle("音乐列表");
        int count=0;
        for (MusicData musicData : linkedList) {
-           QMUICommonListItemView itemWithDetailBelow = mGroupListView.createItemView(musicData.getName());
+           QMUICommonListItemView itemWithDetailBelow = songListManager.mGroupListView.createItemView(musicData.getName());
            itemWithDetailBelow.setOrientation(QMUICommonListItemView.VERTICAL);
            itemWithDetailBelow.setDetailText(musicData.getSinger());//默认文字在左边   描述文字在标题下边
            itemWithDetailBelow.setImageDrawable(context.getDrawable(isplaying? R.drawable.nowpaying_green:musicData.getCoverImage()));
@@ -85,6 +90,8 @@ public class SongListManager implements com.zzu.gaojinlei.music.ManagerInteface.
        }
 
        section.addTo(mGroupListView);
+       layout.addView(mGroupListView);
+//       mGroupListView.refreshDrawableState();
 
     }
 
