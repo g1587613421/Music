@@ -560,7 +560,11 @@ public class MainActivity extends AppCompatActivity {
     }
     public void showImageAni(View view) {
         if (mediaPlayer==null||!mediaPlayer.isPlaying())
-        MultiScrapAnim.show(view, (MagicSurfaceView) MainActivity.mainActivity.findViewById(R.id.Magicsufferview));
+            try {
+                MultiScrapAnim.show(view, (MagicSurfaceView) MainActivity.mainActivity.findViewById(R.id.Magicsufferview));
+            } catch (Exception e) {
+               AutoShowMessage.showQMUIMessage(this,AutoShowMessage.FAIL,"无法使用主机的OpenGL",1000);
+            }
         else
         AutoShowMessage.showQMUIMessage(this,AutoShowMessage.NOTHING,"请先停止播放才能见到特效",200);
     }

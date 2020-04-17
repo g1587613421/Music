@@ -4,7 +4,9 @@
 
 package com.zzu.gaojinlei.music.Launcher;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -58,7 +60,11 @@ public abstract class MagicActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPageSurfaceView.onDestroy();
+        try {
+            mPageSurfaceView.onDestroy();
+        } catch (Exception e) {
+           System.out.println("虚拟机下请打开使用hostGPU的选项,不支持Nexus5X");
+        }
     }
 
     @Override
